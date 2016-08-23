@@ -1,0 +1,110 @@
+#!/bin/bash
+
+. /opt/cmdTest/cmdtest.conf
+
+
+# Check STACKERR code to see if no stacks are loaded, or if one, or more stacks are loaded
+# 2 = more than one stacks - this will create unpredictable behavior.
+
+if [ $STACKERR -eq "2" ]; then
+	CLEAR_CHECKOUT
+fi
+
+
+# STACKERR = 0 means one stack is loaded.  
+
+smMenu(){
+clear
+echo -n "Available stacks: "
+LIST_STACKS
+
+case $STACKERR in
+0)
+echo -e "Current stack: \E[0;36m$CHECKED_STACK\E[0m"
+;;
+1)
+echo -e "Current stack: \E[0;31mNone\E[0m"
+;;
+esac
+
+echo ""
+echo "============================"
+echo "What would you like to do?"
+echo "============================"
+echo ""
+echo "1. Create a new stack"
+echo -e "2. Populate \E[0;36m$CHECKED_STACK\E[0m with questions"
+echo "3. Review stack"
+echo "4. Search for keywords"
+echo "5. Check a different stack out"
+echo "6. Return to Main menu"
+echo ""
+read -p "stackManager ~> " RESPONSE
+case $RESPONSE in
+	1|create)
+	echo "Type the stack name:"
+	echo ""
+	read -p "CREATESTACK > " STACKNAME
+	CREATE_STACK $STACKNAME
+	CHECKOUT_STACK $STACKNAME
+	echo ""
+	echo "Done!"
+	echo ""
+	smMenu
+	;;
+
+	2|populate)
+	POPULATE
+	smMenu
+	;;
+
+	3|review)
+        if [ $STACKERR -eq "0" ]; then
+                VIEW | less
+                clear
+                smMenu
+        elif [ $STACKERR -eq "1" ]; then
+                echo "There is currently no stack checked out."
+                echo "Use stackManager to create a stack or"
+                echo "check one out."
+                smMenu
+        else
+		CLEAR_CHECKOUT
+		echo "There is currently no stack checked out."
+                echo "Use stackManager to create a stack or"
+                echo "check one out."
+                smMenu
+        fi
+	;;
+
+	4|search)
+	FINDQ
+	smMenu
+	;;
+
+	5|check|checkout)
+	echo ""
+	echo "Which stack would you like to check out?"
+	echo ""
+	LIST_STACKS
+	echo ""
+	read -p "stackManager > " STACK_REQ
+	CHECKOUT_STACK $STACK_REQ
+	clear
+	smMenu
+	;;
+
+	6|exit|quit)
+	exit
+	;;
+
+	*)
+	echo -e "\"$RESPONSE\" is not an option.  Please try again."
+	sleep 1
+	clear
+	smMenu
+	;;
+esac
+}
+
+smMenu

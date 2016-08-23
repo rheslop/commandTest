@@ -1,0 +1,24 @@
+cmdTest
+==============
+v 0.4
+
+cmdTest is a simple command line base question/answer testing system designed primarily for memorizing custom commands.  This kind of utility can be especially helpful when preparing for practicum based certification, but can be used for any custom created test.
+
+The first time the application is run, you will be guided to stackManager to create stack (This is stores a sqlite database in .cmdTest/stacks).  Then, use this menu to also begin populating your stack with questions. 
+
+Once a stack is created, it is automatically checked out.  If more than one stack is created, you can use the stack manager to switch between stacks.  Each stack is a single sqlite database, with a single table.  The cmdTest system 'remembers' the checked stack by placing an empty file in the same directory with the same same name (without extension).  This means that if you exit cmdTest, and start it back up, the same stack will remain checked out.
+
+When taking a test, you will be provided a predetermined number of questions (not associated with the number of questions in the stack).  Questions will be randomized with the exception that that the previous question will not be provided, to avoid redundancy. Because the same question is never presented twice in a row, you can only take a test with a single question if there is only a single question populated.
+
+cmdTest is case sensitive. Answers MUST match the originally created answer, including case.
+
+cmdTest keeps a history of scores that can be accessed via the main menu, however at this time, for brevity, only history from the last eight tests is displayed.  There is currently no user provided option to change this behavior, however will be expanded upon in the future.
+
+Optimal use case:
+
+Studying for practicum exam wherein commands must be memorized. 
+THIS DOES NOT REPLACE ACTUAL EXPERIENCE.
+
+	Why should I use this tool then?
+
+Environment setups and workflows take time configure; creating a testing environment helps to aid memorizing commands that will be used in your work flow. This provides for faster memorization, and easier workflow, and better recall on an exam.
