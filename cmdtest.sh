@@ -65,6 +65,7 @@ case $COMMAND in
 ;;
 4|stackManager)
 	$STACKMANAGER
+	. /opt/cmdTest/cmdtest.conf
 	mainWrapper
 ;;
 5|readme)
