@@ -46,7 +46,7 @@ echo -e "2.\tReview History"
 echo -e "3.\tDisplay information"
 echo -e "4.\tManage Stacks"
 echo -e "5.\tView readme"
-echo -e "6.\tQuit"
+echo -e "6.\tExit"
 echo ""
 
 read -p "Main ~> " COMMAND
@@ -55,15 +55,15 @@ case $COMMAND in
 	TEST
 	mainWrapper
 ;;
-2)
+2|history)
 	GET_HISTORY
 	mainWrapper
 ;;
-3|getinfo)
+3|info)
 	GETINFO
 	mainWrapper
 ;;
-4|stackManager)
+4|manage)
 	$STACKMANAGER
 	. /opt/cmdTest/cmdtest.conf
 	mainWrapper
