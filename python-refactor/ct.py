@@ -2,6 +2,7 @@
 
 import os
 import time
+import sqlite3
 
 # Variables
 
@@ -56,13 +57,21 @@ def CLEAR_CHECKOUT():
         if not i.endswith(".db"):
             os.remove(CMD_STACKS + "/" + i)
 
+def CHECKOUT_STACK(STACK):
+    if os.path.isfile(CMD_STACKS + "/" + STACK + ".db"):
+        open(CMD_STACKS + "/" + STACK, 'w').close
+    else:
+        print ("%s is not a valid option." % STACK)
+
+def CREATE_STACK(STACK):
+    DATABASE = CMD_STACKS + "/" + STACK + ".db"
+    open(DATABASE, 'w').close
+    connection = sqlite3.connect(DATABASE)
+    monkey = connection.cursor()
+    monkey.execute('CREATE TABLE main (id INTEGER PRIMARY KEY, Question TEXT, Answer TEXT);')
+
 def STACKMANAGER():
     pass
-def CREATE_STACK(STACKNAME):
-    pass
-def CHECKOUT_STACK(STACKNAME):
-    pass
-
 
 def NEW():
     print ("No stacks detected, let's start by creating one.")
@@ -83,13 +92,5 @@ def NEW():
     print ("\nDone!\n")
     print ("Now that you have a stack, consider populating it with questions so you can take a test!\n")
 
-#NEW()
-
-if (SANITY_CHECK() > 0):
-    if (SANITY_CHECK() > 1):
-        print "Correcting stack."
-        CLEAR_CHECKOUT()
-    else:
-        print CHECKED_STACK()
-else:
-    print ("No stack checked out.")
+STACKNAME = raw_input("Create stack? ")
+CREATE_STACK(STACKNAME)
