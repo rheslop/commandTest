@@ -65,13 +65,35 @@ def CHECKOUT_STACK(STACK):
 
 def CREATE_STACK(STACK):
     DATABASE = CMD_STACKS + "/" + STACK + ".db"
-    open(DATABASE, 'w').close
-    connection = sqlite3.connect(DATABASE)
-    monkey = connection.cursor()
-    monkey.execute('CREATE TABLE main (id INTEGER PRIMARY KEY, Question TEXT, Answer TEXT);')
+    if os.path.isfile(DATABASE):
+        print ("It appears a stack by that name already exists.")
+        return 1
+    else:
+        connection = sqlite3.connect(DATABASE)
+        troll = connection.cursor()
+        troll.execute("CREATE TABLE main (id INTEGER PRIMARY KEY, Question TEXT, Answer TEXT)")
+        connection.commit()
+        connection.close()
+        return 0
 
-def STACKMANAGER():
-    pass
+def POPULATE(STACK):
+    QUESTION = raw_input("Question ~> ")
+    ANSWER = raw_input("Answer ~> ")
+    DATABASE = CMD_STACKS + "/" + STACK + ".db"
+    connection = sqlite3.connect(DATABASE)
+    troll = connection.cursor()
+    troll.execute("INSERT INTO main VALUES (?, ?, ?)", (1, QUESTION, ANSWER))
+    connection.commit()
+    connection.close()
+
+def DISPLAY(STACK):
+    DATABASE = CMD_STACKS + "/" + STACK + ".db"
+    connection = sqlite3.connect(DATABASE)
+    troll = connection.cursor()
+    troll.execute('SELECT * FROM main')
+    print (troll.fetchall())
+    connection.commit()
+    connection.close()
 
 def NEW():
     print ("No stacks detected, let's start by creating one.")
@@ -92,5 +114,3 @@ def NEW():
     print ("\nDone!\n")
     print ("Now that you have a stack, consider populating it with questions so you can take a test!\n")
 
-STACKNAME = raw_input("Create stack? ")
-CREATE_STACK(STACKNAME)
