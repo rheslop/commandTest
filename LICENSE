@@ -1,7 +1,7 @@
 cmdTest
 	
-	* Scripts to build, manage, and take custom, command-line driven tests.
-    	Copyright (C) 2014 Roger Heslop
+	* Build, manage, and create custom, command-line driven tests.
+    	Copyright (C) 2016 Roger Heslop
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
