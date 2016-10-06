@@ -1,11 +1,26 @@
 #!/usr/bin/python
 
+import curses
 import os
 import time
 import sqlite3
 
-# Variables
 
+def BANNER():
+    print ("""
+ ____ _______   _____   __   ___    __   ______
+|  __|  _  | \_/  |  \_/ |  /   \  |  \ | |    \\
+| |  | | | |      |      | /  ^  \ |   \| | |\  |
+| |__| |_| | |\/| | |\/| |/  ___  \| |\   | |/  |
+|____|_____|_|__|_|_|__|_|__/_ _\__|_|_\ _|____/ 
+             |___    ___|   _ |     |___    ___|
+                 |  |   |  |_  \  \_|   |  |
+                 |  |   |   _| _\  \    |  |
+                 |  |   |  |__|  \  \   |  |
+                 |__|   |_____|_____|   |__|
+""")
+
+# Variables
 CMD_HISTORY=(os.path.expanduser("~") + "/.CmdTest/history")
 CMD_STACKS=(os.path.expanduser("~") + "/.CmdTest/stacks")
 
@@ -63,7 +78,8 @@ def CHECKOUT_STACK(STACK):
     else:
         print ("%s is not a valid option." % STACK)
 
-def CREATE_STACK(STACK):
+def CREATE_STACK():
+    STACK = raw_input("Stack Name: ")
     DATABASE = CMD_STACKS + "/" + STACK + ".db"
     if os.path.isfile(DATABASE):
         print ("It appears a stack by that name already exists.")
@@ -97,20 +113,12 @@ def DISPLAY(STACK):
 
 def NEW():
     print ("No stacks detected, let's start by creating one.")
-    try:
-        raw_input("Press <enter> to begin.")
-    except KeyboardInterrupt:
-        print ("\nExiting!")
-        exit()
-
-    # Create stack
-    try:
-        STACKNAME = raw_input("Type the stack name: ")
-    except KeyboardInterrupt:
-        print ("\nExiting!")
-        exit()
-    CREATE_STACK(STACKNAME)
+    CREATE_STACK()
     CHECKOUT_STACK(STACKNAME)
     print ("\nDone!\n")
     print ("Now that you have a stack, consider populating it with questions so you can take a test!\n")
 
+
+
+def MAIN_MENU():
+    pass
