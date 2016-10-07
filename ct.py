@@ -7,20 +7,19 @@ import sqlite3
 
 
 def BANNER():
-    print ("""
- ____ _______   _____   __   ___    __   ______
-|  __|  _  | \_/  |  \_/ |  /   \  |  \ | |    \\
-| |  | | | |      |      | /  ^  \ |   \| | |\  |
-| |__| |_| | |\/| | |\/| |/  ___  \| |\   | |/  |
-|____|_____|_|__|_|_|__|_|__/_ _\__|_|_\ _|____/ 
-             |___    ___|   _ |     |___    ___|
-                 |  |   |  |_  \  \_|   |  |
-                 |  |   |   _| _\  \    |  |
-                 |  |   |  |__|  \  \   |  |
-                 |__|   |_____|_____|   |__|
-""")
+    screen.addstr(0, 10, ' ____ _______   _____   __   ___    __   ______')
+    screen.addstr(1, 10, '|  __|  _  | \_/  |  \_/ |  /   \  |  \ | |    \\')
+    screen.addstr(2, 10, '| |  | | | |      |      | /  ^  \ |   \| | |\  |')
+    screen.addstr(3, 10, '| |__| |_| | |\/| | |\/| |/  ___  \| |\   | |/  |')
+    screen.addstr(4, 10, '|____|_____|_|__|_|_|__|_|__/_ _\__|_|_\__|____/ ')
+    screen.addstr(5, 10, '             |___    ___|   _ |     |___    ___|')
+    screen.addstr(6, 10, '                 |  |   |  |_  \  \_|   |  |')
+    screen.addstr(7, 10, '                 |  |   |   _| _\  \    |  |')
+    screen.addstr(8, 10, '                 |  |   |  |__|  \  \   |  |')
+    screen.addstr(9, 10, '                 |__|   |_____|_____|   |__|')
 
 # Variables
+screen = curses.initscr()
 CMD_HISTORY=(os.path.expanduser("~") + "/.CmdTest/history")
 CMD_STACKS=(os.path.expanduser("~") + "/.CmdTest/stacks")
 
@@ -118,7 +117,41 @@ def NEW():
     print ("\nDone!\n")
     print ("Now that you have a stack, consider populating it with questions so you can take a test!\n")
 
+def MAIN_MENU(screen):
+    curses.curs_set(0)
+    BANNER()
+    screen.refresh()
+    time.sleep(1)
+    screen.clear()
+    curses.start_color()
+    curses.use_default_colors()
+    curses.init_pair(1, curses.COLOR_WHITE, -1)
+    curses.init_pair(2, curses.COLOR_CYAN, -1)
+    screen.addstr(0, 0, 'Welcome to CommandTest - Stack: ', curses.color_pair(1))
+    screen.addstr(0, 32, CHECKED_STACK(), curses.color_pair(2))
+    screen.addstr(3, 0, 'Options:')
+    screen.addstr(5, 3, 'S', curses.A_UNDERLINE)
+    screen.addstr(5, 7, 'Start Test')
+    screen.addstr(5, 30, 'H', curses.A_UNDERLINE)
+    screen.addstr(5, 34, 'Review History')
+    screen.addstr(7, 3, 'I', curses.A_UNDERLINE)
+    screen.addstr(7, 7, 'Display Information')
+    screen.addstr(7, 30, 'M', curses.A_UNDERLINE)
+    screen.addstr(7, 34, 'Manage Stacks')
+    screen.addstr(9, 3, 'R', curses.A_UNDERLINE)
+    screen.addstr(9, 7, 'View README')
+    screen.addstr(9, 30, 'ESC', curses.A_UNDERLINE)
+    screen.addstr(9, 34, 'Exit')
+    screen.getch()
+    curses.endwin()
 
+# 0: black
+# 1: red
+# 2: green
+# 3: yellow
+# 4: blue
+# 5: magenta
+# 6: cyan
+# 7: white
 
-def MAIN_MENU():
-    pass
+curses.wrapper(MAIN_MENU)
