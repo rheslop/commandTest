@@ -66,7 +66,7 @@ def SANITY_CHECK():
     return MARKERS
 
 def CHECKED_STACK():
-    CURRENT = "noneXXXXX"
+    CURRENT = "deadMonkey"
     for i in (os.listdir(CMD_STACKS)):
         if not i.endswith(".db"):
             CURRENT = i
@@ -128,23 +128,51 @@ def TEST(stack):
     pass
 
 def MAIN_MENU():
+    if CHECKED_STACK() == 'deadMonkey':
+        STACK = 'NONE'
+    else:
+        STACK = CHECKED_STACK()
     print \
     commandColors.WHITE + "Welcome to CommandTest - Stack: " + \
-    commandColors.RED + CHECKED_STACK() + \
+    commandColors.RED + STACK + \
     commandColors.DEFAULT
     print ""
     print('Options:')
     print ""
     print('    test                  create')
-    print ""
     print('    display               populate')
-    print ""
     print('    history               view')
-    print ""
     print('    query                 stack')
-    print ""
     print('    help                  exit')
     print ""
+    OPTION = raw_input(" ~> ")
+
+    if OPTION == 'test':
+        pass
+    elif OPTION == 'display':
+        pass
+    elif OPTION == 'history':
+        pass
+    elif OPTION == 'query':
+        pass
+    elif OPTION == 'help':
+        pass
+    elif OPTION == 'create':
+        pass
+    elif OPTION == 'populate':
+        pass
+    elif OPTION == 'view':
+        pass
+    elif OPTION == 'stack':
+        pass
+    elif OPTION == 'exit':
+        exit()
+    else:
+        print (OPTION + ' is not a valid option.')
+        time.sleep(1)
+
+    subprocess.call('clear',shell=True)
+    MAIN_MENU()
     
 BANNER()
 time.sleep(.5)
