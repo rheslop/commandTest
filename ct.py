@@ -6,9 +6,10 @@ import time
 import sqlite3
 
 class commandColors:
+    DEFAULT = '\33[0m'
     RED = '\033[31m'
     CYAN = '\33[36m'
-    END = '\33[0m'
+    WHITE = '\33[37m'
 
 
 def BANNER():
@@ -127,9 +128,24 @@ def TEST(stack):
     pass
 
 def MAIN_MENU():
-    print commandColors.RED + "test" + commandColors.END
-
-
+    print \
+    commandColors.WHITE + "Welcome to CommandTest - Stack: " + \
+    commandColors.RED + CHECKED_STACK() + \
+    commandColors.DEFAULT
+    print ""
+    print('Options:')
+    print ""
+    print('    test                  create')
+    print ""
+    print('    display               populate')
+    print ""
+    print('    history               view')
+    print ""
+    print('    query                 stack')
+    print ""
+    print('    help                  exit')
+    print ""
+    
 BANNER()
 time.sleep(.5)
 subprocess.call('clear',shell=True)
