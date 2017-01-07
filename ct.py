@@ -6,10 +6,10 @@ import time
 import sqlite3
 
 class commandColors:
-    DEFAULT = '\33[0m'
+    DEFAULT = '\033[0m'
     RED = '\033[31m'
-    CYAN = '\33[36m'
-    WHITE = '\33[37m'
+    CYAN = '\033[36m'
+    WHITE = '\033[37m'
 
 
 def BANNER():
@@ -77,11 +77,27 @@ def CLEAR_CHECKOUT():
         if not i.endswith(".db"):
             os.remove(CMD_STACKS + "/" + i)
 
-def CHECKOUT_STACK(STACK):
-    if os.path.isfile(CMD_STACKS + "/" + STACK + ".db"):
-        open(CMD_STACKS + "/" + STACK, 'w').close
+def CHECKOUT_STACK():
+    subprocess.call('clear',shell=True)
+    print commandColors.WHITE + "Select stack:" + commandColors.DEFAULT
+    print('')
+    for i in (os.listdir(CMD_STACKS)):
+        if i.endswith(".db"):
+            print i[:-3] + ('\n')
+    SELECTION = raw_input(" ~> ")
+    if SELECTION:
+        if os.path.isfile(CMD_STACKS + "/" + SELECTION + ".db"):
+            CLEAR_CHECKOUT()
+            open(CMD_STACKS + "/" + SELECTION, 'w').close
+        else:
+            print commandColors.RED + \
+            ("%s is not a valid option." % SELECTION) + \
+            commandColors.DEFAULT
+            time.sleep(1)
+            CHECKOUT_STACK()
     else:
-        print ("%s is not a valid option." % STACK)
+        MAIN_MENU()
+    MAIN_MENU()
 
 def CREATE_STACK():
     subprocess.call('clear',shell=True)
@@ -99,14 +115,63 @@ def CREATE_STACK():
         return STACK
 
 def POPULATE(STACK):
-    QUESTION = raw_input("Question ~> ")
-    ANSWER = raw_input("Answer ~> ")
-    DATABASE = CMD_STACKS + "/" + STACK + ".db"
-    connection = sqlite3.connect(DATABASE)
-    troll = connection.cursor()
-    troll.execute("INSERT INTO main VALUES (?, ?, ?)", (1, QUESTION, ANSWER))
-    connection.commit()
-    connection.close()
+    subprocess.call('clear',shell=True)
+    print('')
+    print commandColors.WHITE + 'Question:'
+    print commandColors.WHITE + 'Answer:' + commandColors.DEFAULT
+    print('')
+    QUESTION = raw_input('Question ~> ')
+    subprocess.call('clear',shell=True)
+
+    print('')
+    print commandColors.WHITE + 'Question: ' + \
+    commandColors.CYAN + QUESTION + commandColors.DEFAULT
+    print commandColors.WHITE + 'Answer:' + commandColors.DEFAULT
+    print('')
+    ANSWER = raw_input('Answer ~> ')
+
+    def POPULATE_MENU():
+        subprocess.call('clear',shell=True)
+        print('')
+        print commandColors.WHITE + 'Question: ' + \
+        commandColors.CYAN + QUESTION + commandColors.DEFAULT
+        print commandColors.WHITE + 'Answer: ' + \
+        commandColors.CYAN + ANSWER + commandColors.DEFAULT
+        print('')
+        print('Options:')
+        print ('')
+        print ('save    - commit and exit')
+        print ('add     - commit and add another')
+        print ('clear   - cancel and start over')
+        print ('exit    - cancel and and return to main menu')          
+        OPTION = raw_input(' ~> ')
+        if OPTION == 'save':
+            DATABASE = CMD_STACKS + "/" + STACK + ".db"
+            connection = sqlite3.connect(DATABASE)
+            troll = connection.cursor()
+            NEXT_ID = troll.execute("SELECT COUNT(*) FROM main").fetchone()[0] + 1
+            troll.execute("INSERT INTO main VALUES (?, ?, ?)", (NEXT_ID, QUESTION, ANSWER))
+            connection.commit()
+            connection.close()
+        elif OPTION == 'add':
+            DATABASE = CMD_STACKS + "/" + STACK + ".db"
+            connection = sqlite3.connect(DATABASE)
+            troll = connection.cursor()
+            NEXT_ID = troll.execute("SELECT COUNT(*) FROM main").fetchone()[0] + 1
+            troll.execute("INSERT INTO main VALUES (?, ?, ?)", (NEXT_ID, QUESTION, ANSWER))
+            connection.commit()
+            connection.close()
+            POPULATE(STACK)
+        elif OPTION == 'clear':
+            POPULATE(STACK)
+        elif OPTION == 'exit':
+            MAIN_MENU()
+        else:
+            print commandColors.RED + OPTION + ' is not a valid option.' + \
+            commandColors.DEFAULT
+            time.sleep(1)
+    POPULATE_MENU()
+            
 
 def DISPLAY(STACK):
     DATABASE = CMD_STACKS + "/" + STACK + ".db"
@@ -116,26 +181,40 @@ def DISPLAY(STACK):
     print (troll.fetchall())
     connection.commit()
     connection.close()
+    raw_input("Press Enter to continue...")
 
 def NEW():
     print ("No stacks detected, let's start by creating one.")
     CREATE_STACK()
     CHECKOUT_STACK(STACKNAME)
     print ("\nDone!\n")
-    print ("Now that you have a stack, consider populating it with questions so you can take a test!\n")
+    print ("Now that you have a stack, consider populate it with questions so you can take a test :-) \n")
 
 def TEST(stack):
     pass
 
 def MAIN_MENU():
+    subprocess.call('clear',shell=True)
     if CHECKED_STACK() == 'deadMonkey':
         STACK = 'NONE'
+        STYLE = commandColors.RED
     else:
         STACK = CHECKED_STACK()
+        STYLE = commandColors.CYAN
+
+    # Some options require a checkedout stack
+    def PRINT_WARN():
+        print commandColors.RED + \
+        'Stack must be Checked out first.'
+        print 'Use' + commandColors.CYAN + ' stack ' \
+        + commandColors.RED + 'for checkout.'
+        time.sleep(1)
+        subprocess.call('clear',shell=True)
+        MAIN_MENU()
+
     print \
     commandColors.WHITE + "Welcome to CommandTest - Stack: " + \
-    commandColors.RED + STACK + \
-    commandColors.DEFAULT
+    STYLE + STACK + commandColors.DEFAULT
     print ""
     print('Options:')
     print ""
@@ -158,17 +237,25 @@ def MAIN_MENU():
     elif OPTION == 'help':
         pass
     elif OPTION == 'create':
-        pass
+        CREATE_STACK()
     elif OPTION == 'populate':
-        pass
+        if STACK == 'NONE':
+            PRINT_WARN()
+        else:
+            POPULATE(STACK)
     elif OPTION == 'view':
-        pass
+        if STACK == 'NONE':
+            PRINT_WARN()
+        else:
+            DISPLAY(STACK)
+
     elif OPTION == 'stack':
-        pass
+        CHECKOUT_STACK()
     elif OPTION == 'exit':
         exit()
     else:
-        print (OPTION + ' is not a valid option.')
+        print commandColors.RED + OPTION + \
+        ' is not a valid option.' + commandColors.DEFAULT
         time.sleep(1)
 
     subprocess.call('clear',shell=True)
@@ -176,5 +263,4 @@ def MAIN_MENU():
     
 BANNER()
 time.sleep(.5)
-subprocess.call('clear',shell=True)
 MAIN_MENU()
