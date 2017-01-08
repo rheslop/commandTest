@@ -4,13 +4,13 @@ import os
 import subprocess
 import time
 import sqlite3
+from random import randint
 
 class commandColors:
     DEFAULT = '\033[0m'
     RED = '\033[31m'
     CYAN = '\033[36m'
     WHITE = '\033[37m'
-
 
 def BANNER():
     print (' ____ _______   _____   __   ___    __   ______')
@@ -27,22 +27,7 @@ def BANNER():
 # Variables
 CMD_HISTORY=(os.path.expanduser("~") + "/.CmdTest/history")
 CMD_STACKS=(os.path.expanduser("~") + "/.CmdTest/stacks")
-
 README = "/opt/cmdTest/README"
-
-# QUIZE_SIZE is the number of questions as requested
-QUIZ_SIZE = 0
-
-# RANDOM_NUMBER between 1 and QUIZ_SIZE
-RANDOM_NUMBER = 0
-
-# PREVIOUS_QUESTION is used to ensure given question does not match previous
-PREVIOUS_QUESTION = 0
-
-FINAL_SCORE = 0
-
-STARTD=(time.strftime("%Y-%m-%d"))
-STARTT=(time.strftime("%H:%M:%S"))
 
 def INIT_DIRS():
     if os.path.isdir(CMD_HISTORY):
@@ -105,11 +90,10 @@ def CREATE_STACK():
     DATABASE = CMD_STACKS + "/" + STACK + ".db"
     if os.path.isfile(DATABASE):
         print ("It appears a stack by that name already exists.")
-        return 1
     else:
         connection = sqlite3.connect(DATABASE)
         troll = connection.cursor()
-        troll.execute("CREATE TABLE main (id INTEGER PRIMARY KEY, Question TEXT, Answer TEXT)")
+        troll.execute("CREATE TABLE main (Question TEXT, Answer TEXT)")
         connection.commit()
         connection.close()
         return STACK
@@ -149,16 +133,14 @@ def POPULATE(STACK):
             DATABASE = CMD_STACKS + "/" + STACK + ".db"
             connection = sqlite3.connect(DATABASE)
             troll = connection.cursor()
-            NEXT_ID = troll.execute("SELECT COUNT(*) FROM main").fetchone()[0] + 1
-            troll.execute("INSERT INTO main VALUES (?, ?, ?)", (NEXT_ID, QUESTION, ANSWER))
+            troll.execute("INSERT INTO main VALUES (?, ?)", (QUESTION, ANSWER))
             connection.commit()
             connection.close()
         elif OPTION == 'add':
             DATABASE = CMD_STACKS + "/" + STACK + ".db"
             connection = sqlite3.connect(DATABASE)
             troll = connection.cursor()
-            NEXT_ID = troll.execute("SELECT COUNT(*) FROM main").fetchone()[0] + 1
-            troll.execute("INSERT INTO main VALUES (?, ?, ?)", (NEXT_ID, QUESTION, ANSWER))
+            troll.execute("INSERT INTO main VALUES (?, ?)", (QUESTION, ANSWER))
             connection.commit()
             connection.close()
             POPULATE(STACK)
@@ -170,6 +152,7 @@ def POPULATE(STACK):
             print commandColors.RED + OPTION + ' is not a valid option.' + \
             commandColors.DEFAULT
             time.sleep(1)
+            POPULATE_MENU()
     POPULATE_MENU()
             
 
@@ -190,8 +173,63 @@ def NEW():
     print ("\nDone!\n")
     print ("Now that you have a stack, consider populate it with questions so you can take a test :-) \n")
 
-def TEST(stack):
-    pass
+def TEST(STACK):
+    # EXCLUSION_WINDOW is used to ensure questions are not repeated too often
+    EXCLUSION_WINDOW = []
+
+    Qlist = []
+    Alist = []
+
+    STARTD=(time.strftime("%Y-%m-%d"))
+    STARTT=(time.strftime("%H:%M:%S"))
+
+    # QUIZ_SIZE is the number of questions as requested
+    QUIZ_SIZE = 3
+
+    CORRECT = 0
+    INCORRECT = 0
+
+    # Populate Qlist and Alist with questions and answers
+
+    DATABASE = CMD_STACKS + "/" + STACK + ".db"
+    connection = sqlite3.connect(DATABASE)
+    troll = connection.cursor()
+    troll.execute("SELECT Question FROM main")
+    for row in troll.fetchall():
+        Qlist.append(row[0])
+    troll.execute("SELECT Answer FROM main")
+    for row in troll.fetchall():
+        Alist.append(row[0])
+
+    if len(Qlist) > 20:
+        EXCLUSION_WINDOW_SIZE = 7
+    elif len(Qlist) > 10:
+        EXCLUSION_WINDOW_SIZE = 4
+    elif len(Qlist) > 1:
+        EXCLUSION_WINDOW_SIZE = 1
+
+    for i in range(0, QUIZ_SIZE):
+
+        Q_INDEX = randint(0, (len(Qlist) - 1))
+        while Q_INDEX in EXCLUSION_WINDOW:
+            Q_INDEX = randint(0, (len(Qlist) - 1))
+        if len(EXCLUSION_WINDOW) < EXCLUSION_WINDOW_SIZE:
+            EXCLUSION_WINDOW.append(Q_INDEX)
+        else:
+            del EXCLUSION_WINDOW[0]
+            EXCLUSION_WINDOW.append(Q_INDEX)
+
+        print Qlist[Q_INDEX]
+        user_response = raw_input(" ~> ")
+        if user_response == Alist[Q_INDEX]:
+            print "Correct!"
+            CORRECT += 1
+            print("Score = %d" % (CORRECT))
+        else:
+            print "Wrong!"
+            INCORRECT += 1
+
+    raw_input("Press Enter to continue...")
 
 def MAIN_MENU():
     subprocess.call('clear',shell=True)
@@ -205,10 +243,10 @@ def MAIN_MENU():
     # Some options require a checkedout stack
     def PRINT_WARN():
         print commandColors.RED + \
-        'Stack must be Checked out first.'
+        'A stack must be checked out first.'
         print 'Use' + commandColors.CYAN + ' stack ' \
         + commandColors.RED + 'for checkout.'
-        time.sleep(1)
+        time.sleep(1.5)
         subprocess.call('clear',shell=True)
         MAIN_MENU()
 
@@ -227,7 +265,10 @@ def MAIN_MENU():
     OPTION = raw_input(" ~> ")
 
     if OPTION == 'test':
-        pass
+        if STACK == 'NONE':
+            PRINT_WARN()
+        else:
+            TEST(STACK)
     elif OPTION == 'display':
         pass
     elif OPTION == 'history':
@@ -237,7 +278,9 @@ def MAIN_MENU():
     elif OPTION == 'help':
         pass
     elif OPTION == 'create':
-        CREATE_STACK()
+        STACK = CREATE_STACK()
+        CLEAR_CHECKOUT()
+        open(CMD_STACKS + "/" + STACK, 'w').close
     elif OPTION == 'populate':
         if STACK == 'NONE':
             PRINT_WARN()
