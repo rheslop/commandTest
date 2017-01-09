@@ -1,1 +1,24 @@
-- This project is currently under develoment.
+CommandTest (formerly cmdTest) - still in Development
+==============
+v 0.5
+
+cmdTest is a simple command line base question/answer testing system designed primarily for memorizing user-defined commands or questions. This kind of utility can be especially helpful when preparing for practicum based certification, but can be used for any custom created test.
+
+The first time the application is run, you will be guided to create your first stack (This is stores a sqlite database in .CmdTest/stacks). You can then populate your stack with questions. 
+
+Once a stack is created, it is automatically checked out. If more than one stack of questions is desired, you can switch between stacks. Each stack is a single sqlite database, with a single table.  CommandTest 'remembers' the checked stack by placing an empty file in the same directory, with the same name as the sqlite database without the extension. This means that if you exit and restart CommandTest, the same stack will remain checked out.
+
+When taking a test, provide the number of questions that should be asked (not associated with the number of questions in the stack).  Questions will be randomized with the exception of the most recent (variably sized buffer) to avoid redundancy. Because the same question is never presented twice in a row, if there is only one question in your stack, the quiz size will always be one.
+
+CommandTest is case sensitive. Answers MUST match the originally created answer to include case.
+
+CommandTest keeps a history of scores that can be accessed via the main menu, however at this time, for brevity, only history from the last eight tests is displayed. There is currently no user provided option to change this behavior, however will be expanded upon in the future.
+
+Optimal use case:
+
+Studying for practicum exam wherein commands must be memorized. 
+THIS DOES NOT REPLACE ACTUAL EXPERIENCE.
+
+	Why should I use this tool then?
+
+Environment setups and workflows take time configure; creating a testing environment helps to aid memorizing commands that will be used in your work flow. This provides for faster memorization, and easier workflow, and better recall on an exam.
