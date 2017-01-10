@@ -58,6 +58,32 @@ def CHECKED_STACK():
             CURRENT = i
     return CURRENT
 
+def HISTORY(STACK):
+    DATES = []
+    TIMES = []
+    SCORES = []
+    TEST_HISTORY =(CMD_HISTORY + '/' + STACK + '.db')
+    if not os.path.isfile(TEST_HISTORY):
+        print commandColors.RED + "There isn't history for this test yet."
+    else:
+        connection = sqlite3.connect(TEST_HISTORY)
+        troll = connection.cursor()
+        troll.execute('SELECT DATE FROM main')
+        for row in troll.fetchall():
+            DATES.append(row[0])
+        troll.execute('SELECT TIME FROM main')
+        for row in troll.fetchall():
+            TIMES.append(row[0])
+        troll.execute('SELECT SCORE FROM main')
+        for row in troll.fetchall():
+            SCORES.append(row[0])
+        for H_INDEX in range(0, len(DATES)):
+            print commandColors.WHITE + DATES[H_INDEX] + ' ' + \
+            TIMES[H_INDEX] + commandColors.CYAN + ' ' + \
+            SCORES[H_INDEX] + commandColors.DEFAULT
+
+    raw_input('Press Enter to continue...')
+
 def CLEAR_CHECKOUT():
     for i in (os.listdir(CMD_STACKS)):
         if not i.endswith('.db'):
@@ -315,8 +341,24 @@ def TEST(STACK):
     Score = float(CORRECT) / float(i)
     print('Final Score = ' + commandColors.CYAN + '%.2f' % (Score))
     print commandColors.DEFAULT
-    raw_input('Press Enter to continue...')
     connection.close()
+
+    TEST_HISTORY =(CMD_HISTORY + '/' + STACK + '.db')
+    if not os.path.isfile(TEST_HISTORY):
+        connection = sqlite3.connect(TEST_HISTORY)
+        troll = connection.cursor()
+        troll.execute('CREATE TABLE main (DATE TEXT, TIME TEXT, SCORE TEXT)')
+        connection.commit()
+        connection.close()
+
+    connection = sqlite3.connect(TEST_HISTORY)
+    troll = connection.cursor()
+    troll.execute('INSERT INTO main VALUES (?, ?, ?)', (STARTD, STARTT, str(Score)))
+    connection.commit()
+    connection.close()
+
+    raw_input('Press Enter to continue...')
+
 
 def NEW():
     print ("No stacks detected, let's start by creating one.")
@@ -388,7 +430,10 @@ def MAIN_MENU(EXPANDED):
     elif OPTION == 'info':
         pass
     elif OPTION == 'history':
-        pass
+        if STACK == 'NONE':
+            PRINT_WARN()
+        else:
+            HISTORY(STACK)
     elif OPTION == 'query':
         if STACK == 'NONE':
             PRINT_WARN()
