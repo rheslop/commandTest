@@ -10,9 +10,7 @@ Once a stack is created, it is automatically checked out. If more than one stack
 
 When taking a test, provide the number of questions that should be asked (not associated with the number of questions in the stack).  Questions will be randomized with the exception of the most recent (variably sized buffer) to avoid redundancy. Because the same question is never presented twice in a row, if there is only one question in your stack, the quiz size will always be one.
 
-CommandTest is case sensitive. Answers MUST match the originally created answer to include case.
-
-CommandTest keeps a history of scores that can be accessed via the main menu, however at this time, for brevity, only history from the last eight tests is displayed. There is currently no user provided option to change this behavior, however will be expanded upon in the future.
+CommandTest is case sensitive. Answers MUST match the originally created answer to include case. A history of scores can be accessed via the main menu.
 
 Optimal use case:
 
