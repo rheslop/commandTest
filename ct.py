@@ -6,6 +6,7 @@ import time
 import sqlite3
 from random import randint
 
+
 class commandColors:
     DEFAULT = '\033[0m'
     RED = '\033[31m'
@@ -159,21 +160,64 @@ def POPULATE(STACK):
     POPULATE_MENU()
             
 def DISPLAY(STACK):
+    Qlist = []
+    Alist = []
+
     DATABASE = CMD_STACKS + '/' + STACK + '.db'
     connection = sqlite3.connect(DATABASE)
     troll = connection.cursor()
-    troll.execute('SELECT * FROM main')
-    print (troll.fetchall())
-    connection.commit()
+    troll.execute('SELECT Question FROM main')
+    for row in troll.fetchall():
+        Qlist.append(row[0])
+    troll.execute('SELECT Answer FROM main')
+    for row in troll.fetchall():
+        Alist.append(row[0])
+
+    for Q_INDEX in range(0, len(Qlist)):
+         print commandColors.WHITE + 'Question: ' + \
+         commandColors.DEFAULT + Qlist[Q_INDEX]
+         print commandColors.WHITE + 'Answer: ' + \
+         commandColors.DEFAULT + Alist[Q_INDEX]
+         print('')
     connection.close()
+
     raw_input('Press Enter to continue...')
 
-def NEW():
-    print ('No stacks detected, let's start by creating one.')
-    CREATE_STACK()
-    CHECKOUT_STACK(STACKNAME)
-    print ('\nDone!\n')
-    print ('Now that you have a stack, consider populate it with questions so you can take a test :-) \n')
+def QUERY(STACK):
+    Qlist = []
+    Alist = []
+    matches = 0
+
+    DATABASE = CMD_STACKS + '/' + STACK + '.db'
+    connection = sqlite3.connect(DATABASE)
+    troll = connection.cursor()
+    troll.execute('SELECT Question FROM main')
+    for row in troll.fetchall():
+        Qlist.append(row[0])
+    troll.execute('SELECT Answer FROM main')
+    for row in troll.fetchall():
+        Alist.append(row[0])
+    connection.close()
+    print('')
+    ARG = raw_input('SEARCH: ')    
+    for Q_INDEX in range(0, len(Qlist)):
+        if Qlist[Q_INDEX].find(ARG) != -1:
+            matches += 1
+            print commandColors.WHITE + 'Question: ' + \
+            commandColors.DEFAULT + Qlist[Q_INDEX]
+            print commandColors.WHITE + 'Answer: ' + \
+            commandColors.DEFAULT + Alist[Q_INDEX]
+            print('')
+        elif Alist[Q_INDEX].find(ARG) != -1:
+            matches += 1
+            print commandColors.WHITE + 'Question: ' + \
+            commandColors.DEFAULT + Qlist[Q_INDEX]
+            print commandColors.WHITE + 'Answer: ' + \
+            commandColors.DEFAULT + Alist[Q_INDEX]
+            print('')
+    if matches == 0:
+        print('No matches found.')
+    raw_input('Press Enter to continue...')
 
 def TEST(STACK):
     # EXCLUSION_WINDOW is used to ensure questions are not repeated too often
@@ -186,7 +230,6 @@ def TEST(STACK):
     STARTT=(time.strftime("%H:%M:%S"))
 
     # QUIZ_SIZE is the number of questions as requested
-
 
     CORRECT = 0
     INCORRECT = 0
@@ -273,6 +316,14 @@ def TEST(STACK):
     print('Final Score = ' + commandColors.CYAN + '%.2f' % (Score))
     print commandColors.DEFAULT
     raw_input('Press Enter to continue...')
+    connection.close()
+
+def NEW():
+    print ("No stacks detected, let's start by creating one.")
+    CREATE_STACK()
+    CHECKOUT_STACK(STACKNAME)
+    print ('\nDone!\n')
+    print ('Now that you have a stack, consider populate it with questions so you can take a test :-) \n')
 
 def MAIN_MENU(EXPANDED):
     subprocess.call('clear',shell=True)
@@ -315,10 +366,10 @@ def MAIN_MENU(EXPANDED):
         print('')
         print('Options:')
         print('')
-        print('    test - Start test               create - Create stack')
-        print('    stack - Switch stacks           populate - Populate stack with questions')
-        print('    history - View test history     view - View contents of stack')
-        print('    query - query stack             info - Get technical information')
+        print('    test    | Start test            create   | Create stack')
+        print('    stack   | Switch stacks         populate | Populate stack with questions')
+        print('    history | View test history     view     | View contents of stack')
+        print('    query   | query stack           info     | Get technical information')
         print('    help                            exit')
         print ('')
 
@@ -339,7 +390,10 @@ def MAIN_MENU(EXPANDED):
     elif OPTION == 'history':
         pass
     elif OPTION == 'query':
-        pass
+        if STACK == 'NONE':
+            PRINT_WARN()
+        else:
+            QUERY(STACK)
     elif OPTION == 'help':
         MAIN_MENU(1)
     elif OPTION == 'create':
@@ -368,7 +422,10 @@ def MAIN_MENU(EXPANDED):
         time.sleep(1)
 
     subprocess.call('clear',shell=True)
-    MAIN_MENU(0)
+    if EXPANDED == 0:
+        MAIN_MENU(0)
+    else:
+        MAIN_MENU(1)
     
 BANNER()
 time.sleep(.5)
