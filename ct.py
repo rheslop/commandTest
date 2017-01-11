@@ -225,7 +225,7 @@ def QUERY(STACK):
         Alist.append(row[0])
     connection.close()
     print('')
-    ARG = raw_input('SEARCH: ')    
+    ARG = raw_input('QUERY: ')    
     for Q_INDEX in range(0, len(Qlist)):
         if Qlist[Q_INDEX].find(ARG) != -1:
             matches += 1
@@ -394,10 +394,10 @@ def MAIN_MENU(EXPANDED):
         print('')
         print('Options:')
         print('')
-        print('    test                            create')
-        print('    stack                           populate')
-        print('    history                         view')
-        print('    query                           info')
+        print('    test                            select')
+        print('    history                         create')
+        print('    view                            populate')
+        print('    search                          prune')
         print('    help                            exit')
         print ('')
 
@@ -408,10 +408,10 @@ def MAIN_MENU(EXPANDED):
         print('')
         print('Options:')
         print('')
-        print('    test    | Start test            create   | Create stack')
-        print('    stack   | Switch stacks         populate | Populate stack with questions')
-        print('    history | View test history     view     | View contents of stack')
-        print('    query   | query stack           info     | Get technical information')
+        print('    test    | Start test            select   | Switch stacks')
+        print('    history | View test history     create   | Create new stack')
+        print('    view    | View stack contents   populate | Add questions to stack')
+        print('    search  | query stack           prune    | Remove questions from stack')
         print('    help                            exit')
         print ('')
 
@@ -427,14 +427,14 @@ def MAIN_MENU(EXPANDED):
             PRINT_WARN()
         else:
             TEST(STACK)
-    elif OPTION == 'info':
+    elif OPTION == 'prune':
         pass
     elif OPTION == 'history':
         if STACK == 'NONE':
             PRINT_WARN()
         else:
             HISTORY(STACK)
-    elif OPTION == 'query':
+    elif OPTION == 'search':
         if STACK == 'NONE':
             PRINT_WARN()
         else:
@@ -455,7 +455,7 @@ def MAIN_MENU(EXPANDED):
             PRINT_WARN()
         else:
             DISPLAY(STACK)
-    elif OPTION == 'stack':
+    elif OPTION == 'select':
         CHECKOUT_STACK()
     elif OPTION == 'exit':
         exit()
