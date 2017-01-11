@@ -128,6 +128,65 @@ def CREATE_STACK():
         connection.close()
         return STACK
 
+def PRUNE(STACK):
+    subprocess.call('clear',shell=True)
+    print('')
+    Qlist = []
+    Alist = []
+    ID_list = []
+
+    DATABASE = CMD_STACKS + '/' + STACK + '.db'
+    connection = sqlite3.connect(DATABASE)
+    troll = connection.cursor()
+    troll.execute('SELECT Question FROM main')
+    for row in troll.fetchall():
+        Qlist.append(row[0])
+    troll.execute('SELECT Answer FROM main')
+    for row in troll.fetchall():
+        Alist.append(row[0])
+    troll.execute('SELECT rowid FROM main')
+    for row in troll.fetchall():
+        ID_list.append(row[0])
+        
+    connection.close()
+
+    for Q_INDEX in range(0, len(Qlist)):
+        NUM = str(Q_INDEX + 1)
+        print commandColors.RED + NUM + '. ' + \
+        commandColors.WHITE + 'Q: ' + commandColors.DEFAULT + \
+        Qlist[Q_INDEX] + ' ' + commandColors.WHITE + 'A: ' + \
+        commandColors.DEFAULT + Alist[Q_INDEX]
+    print('')
+    print('Choose the Q/A pair to delete by number.\nThis will DELETE the Q/A pair from the stack.')
+    print('\nType \'exit\' or \'quit\' to return to main menu.\n')
+    DELETE_ME = raw_input(' ~> ')
+    if DELETE_ME == 'exit' or DELETE_ME == 'quit':
+        MAIN_MENU(0)
+    else:
+        try:
+            Q_INDEX = int(DELETE_ME) - 1
+        except ValueError:
+            print commandColors.RED + 'ValueError' + commandColors.DEFAULT
+            time.sleep(1)
+            PRUNE(STACK)
+    if int(DELETE_ME) <= 0:
+        print commandColors.RED + "IndexError: I'm not seeing number %s" % DELETE_ME
+        time.sleep(1)
+        PRUNE(STACK)
+    try:
+        TARGET = ID_list[Q_INDEX]
+    except IndexError:
+        print commandColors.RED + "IndexError: I'm not seeing number %s" % DELETE_ME
+        time.sleep(1)
+        PRUNE(STACK)
+    DATABASE = CMD_STACKS + '/' + STACK + '.db'
+    connection = sqlite3.connect(DATABASE)
+    troll = connection.cursor()
+    troll.execute('DELETE FROM main WHERE rowid = ?', (TARGET,))
+    connection.commit()
+    connection.close()
+    PRUNE(STACK)
+    
 def POPULATE(STACK):
     subprocess.call('clear',shell=True)
     print('')
@@ -428,7 +487,10 @@ def MAIN_MENU(EXPANDED):
         else:
             TEST(STACK)
     elif OPTION == 'prune':
-        pass
+        if STACK == 'NONE':
+            PRINT_WARN()
+        else:
+            PRUNE(STACK)
     elif OPTION == 'history':
         if STACK == 'NONE':
             PRINT_WARN()
