@@ -40,22 +40,98 @@ def INIT():
         troll = connection.cursor()
         troll.execute('CREATE TABLE main (menu TEXT, option TEXT)')
         troll.execute('INSERT INTO main VALUES (?, ?)', ('test_type', 1))
-        troll.execute('INSERT INTO main VALUES (?, ?)', ('visibilty', 1))
+        troll.execute('INSERT INTO main VALUES (?, ?)', ('visibility', 1))
+        troll.execute('INSERT INTO main VALUES (?, ?)', ('case_sensitivity', 1))
         connection.commit()
         connection.close()
     
 def SETTINGS():
     connection = sqlite3.connect(SETTINGS_DATABASE)
     troll = connection.cursor()
-    troll.execute("SELECT option FROM main WHERE MENU='test_type'")
-    print troll.fetchone()[0]
-    time.sleep(1)
-    #print('')
-    #print(' Test Flow')
-    #print('1. Randomized - Variable [ ]')
-    #print('2. Randomized - Full     [ ]')
-    #print('3. Ordered               [*]')
-        
+    troll.execute("SELECT option FROM main WHERE menu='test_type'")
+    test_type = troll.fetchone()[0]
+    troll.execute("SELECT option FROM main WHERE menu='visibility'")
+    visibility = troll.fetchone()[0]
+    troll.execute("SELECT option FROM main WHERE menu='case_sensitivity'")
+    case = troll.fetchone()[0]
+    connection.commit()
+    connection.close()
+    subprocess.call('clear',shell=True)
+    print('')
+    print(' Test Flow')
+    print('')
+    if test_type == '1':
+        print(' 1. Randomized - Variable [*]')
+        print(' 2. Randomized - Full     [ ]')
+        print(' 3. Ordered               [ ]')
+    elif test_type == '2':
+        print(' 1. Randomized - Variable [ ]')
+        print(' 2. Randomized - Full     [*]')
+        print(' 3. Ordered               [ ]')
+    elif test_type == '3':
+        print(' 1. Randomized - Variable [ ]')
+        print(' 2. Randomized - Full     [ ]')
+        print(' 3. Ordered               [*]')
+    print('')
+    print('')
+    print(' Behavior when wong answer provided:')
+    print('')
+    if visibility == '0':
+        print(' 4. Show correct answer [ ]')
+        print(' 5. Hide correct answer [*]')
+    elif visibility == '1':
+        print(' 4. Show correct answer [*]')
+        print(' 5. Hide correct answer [ ]')
+    print('')
+    print('')
+    print(' Case sensitivity:')
+    print('')
+    if case == '0':
+        print(' 6. On  [ ]')
+        print(' 7. Off [*]')
+    elif case == '1':
+        print(' 6. On  [*]')
+        print(' 7. Off [ ]')
+    print('')
+    print('')
+    USER_SELECTION = raw_input(' SELECTION ~> ')
+
+    if USER_SELECTION == 'exit' or USER_SELECTION == 'quit':
+        MAIN_MENU(0)
+    else:
+        try:
+            test_int = int(USER_SELECTION)
+        except ValueError:
+            print commandColors.RED + USER_SELECTION + ' is not a number.  Please select menu option. (1 - 7)'
+            print commandColors.DEFAULT
+            time.sleep(1)
+            SETTINGS()
+        if not 0 < int(USER_SELECTION) < 8:
+            print commandColors.RED + USER_SELECTION + ' is out of bounds.  Please select menu option between 1 and 7.'
+            print commandColors.DEFAULT
+            time.sleep(1)
+            SETTINGS()
+        else:
+            connection = sqlite3.connect(SETTINGS_DATABASE)
+            troll = connection.cursor()
+            if USER_SELECTION == '1':
+                troll.execute('UPDATE main SET option=? WHERE menu=?', ('1', 'test_type'))
+            elif USER_SELECTION == '2':
+                troll.execute('UPDATE main SET option=? WHERE menu=?', ('2', 'test_type'))
+            elif USER_SELECTION == '3':
+                troll.execute('UPDATE main SET option=? WHERE menu=?', ('3', 'test_type'))
+            elif USER_SELECTION == '4':
+                troll.execute('UPDATE main SET option=? WHERE menu=?', ('1', 'visibility'))
+            elif USER_SELECTION == '5':
+                troll.execute('UPDATE main SET option=? WHERE menu=?', ('0', 'visibility'))
+            elif USER_SELECTION == '6':
+                troll.execute('UPDATE main SET option=? WHERE menu=?', ('1', 'case_sensitivity'))
+            elif USER_SELECTION == '7':
+                troll.execute('UPDATE main SET option=? WHERE menu=?', ('0', 'case_sensitivity'))
+            connection.commit()
+            connection.close()
+            SETTINGS()
+
 def NEW():
     print ('No stacks detected, let\'s start by creating one.')
     CREATE_STACK()
