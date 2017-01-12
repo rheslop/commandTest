@@ -64,7 +64,7 @@ def HISTORY(STACK):
     SCORES = []
     TEST_HISTORY =(CMD_HISTORY + '/' + STACK + '.db')
     if not os.path.isfile(TEST_HISTORY):
-        print commandColors.RED + "There isn't history for this test yet."
+        print commandColors.RED + 'There isn\'t history for this test yet.'
     else:
         connection = sqlite3.connect(TEST_HISTORY)
         troll = connection.cursor()
@@ -166,17 +166,17 @@ def PRUNE(STACK):
         try:
             Q_INDEX = int(DELETE_ME) - 1
         except ValueError:
-            print commandColors.RED + 'ValueError' + commandColors.DEFAULT
+            print commandColors.RED + 'ValueError: I don\'t recognize that as a number.' + commandColors.DEFAULT
             time.sleep(1)
             PRUNE(STACK)
     if int(DELETE_ME) <= 0:
-        print commandColors.RED + "IndexError: I'm not seeing number %s" % DELETE_ME
+        print commandColors.RED + 'IndexError: I\'m not seeing number %s' % DELETE_ME
         time.sleep(1)
         PRUNE(STACK)
     try:
         TARGET = ID_list[Q_INDEX]
     except IndexError:
-        print commandColors.RED + "IndexError: I'm not seeing number %s" % DELETE_ME
+        print commandColors.RED + 'IndexError: I\'m not seeing number %s' % DELETE_ME
         time.sleep(1)
         PRUNE(STACK)
     DATABASE = CMD_STACKS + '/' + STACK + '.db'
@@ -369,7 +369,7 @@ def TEST(STACK):
         # Header
         if i == 0:
             print commandColors.WHITE + \
-            ("Total %d | Correct %d | Answered %d" % (QUIZ_SIZE,CORRECT,i)) \
+            ('Total %d | Correct %d | Answered %d' % (QUIZ_SIZE,CORRECT,i)) \
             + commandColors.DEFAULT
         else:
             Score = float(CORRECT) / float(i)
@@ -398,7 +398,8 @@ def TEST(STACK):
     print('')
     i += 1
     Score = float(CORRECT) / float(i)
-    print('Final Score = ' + commandColors.CYAN + '%.2f' % (Score))
+    DISPLAY_SCORE = ('%.2f' % (Score))
+    print('Final Score = ' + commandColors.CYAN + DISPLAY_SCORE)
     print commandColors.DEFAULT
     connection.close()
 
@@ -412,7 +413,7 @@ def TEST(STACK):
 
     connection = sqlite3.connect(TEST_HISTORY)
     troll = connection.cursor()
-    troll.execute('INSERT INTO main VALUES (?, ?, ?)', (STARTD, STARTT, str(Score)))
+    troll.execute('INSERT INTO main VALUES (?, ?, ?)', (STARTD, STARTT, str(DISPLAY_SCORE)))
     connection.commit()
     connection.close()
 
@@ -420,7 +421,7 @@ def TEST(STACK):
 
 
 def NEW():
-    print ("No stacks detected, let's start by creating one.")
+    print ('No stacks detected, let\'s start by creating one.')
     CREATE_STACK()
     CHECKOUT_STACK(STACKNAME)
     print ('\nDone!\n')
@@ -453,25 +454,27 @@ def MAIN_MENU(EXPANDED):
         print('')
         print('Options:')
         print('')
-        print('    test                            select')
-        print('    history                         create')
-        print('    view                            populate')
-        print('    search                          prune')
-        print('    help                            exit')
+        print('    test                             select')
+        print('    history                          create')
+        print('    view                             populate')
+        print('    search                           prune')
+        print('    settings                         delete')
+        print('    help                             exit')
         print ('')
 
     def MENU_LONG():
         print \
-        commandColors.WHITE + "Welcome to CommandTest - Stack: " + \
+        commandColors.WHITE + 'Welcome to CommandTest - Stack: ' + \
         STYLE + STACK + commandColors.DEFAULT
         print('')
         print('Options:')
         print('')
-        print('    test    | Start test            select   | Switch stacks')
-        print('    history | View test history     create   | Create new stack')
-        print('    view    | View stack contents   populate | Add questions to stack')
-        print('    search  | query stack           prune    | Remove questions from stack')
-        print('    help                            exit')
+        print('    test     | Start test            select   | Switch stacks')
+        print('    history  | View test history     create   | Create new stack')
+        print('    view     | View stack contents   populate | Add questions to stack')
+        print('    search   | Query stack           prune    | Remove questions from stack')
+        print('    settings | Change settings       delete   | Delete this stack')
+        print('    help                             exit')
         print ('')
 
     if EXPANDED == 0:
@@ -486,39 +489,43 @@ def MAIN_MENU(EXPANDED):
             PRINT_WARN()
         else:
             TEST(STACK)
-    elif OPTION == 'prune':
-        if STACK == 'NONE':
-            PRINT_WARN()
-        else:
-            PRUNE(STACK)
     elif OPTION == 'history':
         if STACK == 'NONE':
             PRINT_WARN()
         else:
             HISTORY(STACK)
-    elif OPTION == 'search':
-        if STACK == 'NONE':
-            PRINT_WARN()
-        else:
-            QUERY(STACK)
-    elif OPTION == 'help':
-        MAIN_MENU(1)
-    elif OPTION == 'create':
-        STACK = CREATE_STACK()
-        CLEAR_CHECKOUT()
-        open(CMD_STACKS + "/" + STACK, 'w').close
-    elif OPTION == 'populate':
-        if STACK == 'NONE':
-            PRINT_WARN()
-        else:
-            POPULATE(STACK)
     elif OPTION == 'view':
         if STACK == 'NONE':
             PRINT_WARN()
         else:
             DISPLAY(STACK)
+    elif OPTION == 'search':
+        if STACK == 'NONE':
+            PRINT_WARN()
+        else:
+            QUERY(STACK)
+    elif OPTION == 'settings':
+        pass
+    elif OPTION == 'help':
+        MAIN_MENU(1)
     elif OPTION == 'select':
         CHECKOUT_STACK()
+    elif OPTION == 'create':
+        STACK = CREATE_STACK()
+        CLEAR_CHECKOUT()
+        open(CMD_STACKS + '/' + STACK, 'w').close
+    elif OPTION == 'populate':
+        if STACK == 'NONE':
+            PRINT_WARN()
+        else:
+            POPULATE(STACK)
+    elif OPTION == 'prune':
+        if STACK == 'NONE':
+            PRINT_WARN()
+        else:
+            PRUNE(STACK)
+    elif OPTION == 'delete':
+        pass
     elif OPTION == 'exit':
         exit()
     elif OPTION == 'clear':
