@@ -394,6 +394,16 @@ def QUERY(STACK):
 
 
 def TEST1(STACK):
+    
+    connection = sqlite3.connect(SETTINGS_DATABASE)
+    troll = connection.cursor()
+    troll.execute("SELECT option FROM main WHERE menu='visibility'")
+    visibility = troll.fetchone()[0]
+    troll.execute("SELECT option FROM main WHERE menu='case_sensitivity'")
+    case = troll.fetchone()[0]
+    connection.commit()
+    connection.close()
+    
     # EXCLUSION_WINDOW is used to ensure questions are not repeated too often
     EXCLUSION_WINDOW = []
 
@@ -466,19 +476,30 @@ def TEST1(STACK):
             ('Total %d | Correct %d | Answered %d | Score ' % (QUIZ_SIZE,CORRECT,i)) \
             + commandColors.CYAN + '%.2f' % (Score) + commandColors.DEFAULT
         print('')
-
         print Qlist[Q_INDEX]
         user_response = raw_input(' ~> ')
-        if user_response == Alist[Q_INDEX]:
-            print('')
-            print(':-)')
-            CORRECT += 1
-            time.sleep(.5)
-        else:
+        
+        DO_WRONG = True
+        if case == '0':
+            if user_response.lower() == Alist[Q_INDEX].lower():
+                print('')
+                print(':-)')
+                CORRECT += 1
+                time.sleep(.5)
+                DO_WRONG = False
+        else: 
+            if user_response == Alist[Q_INDEX]:
+                print('')
+                print(':-)')
+                CORRECT += 1
+                time.sleep(.5)
+                DO_WRONG = False
+        if DO_WRONG:
             print('')
             print(commandColors.RED + 'Incorrect' + commandColors.DEFAULT)
-            print(commandColors.WHITE + 'Correct Answer: ' \
-            + commandColors.DEFAULT + Alist[Q_INDEX])
+            if visibility == '1':
+                print(commandColors.WHITE + 'Correct Answer: ' \
+                + commandColors.DEFAULT + Alist[Q_INDEX])
             INCORRECT += 1
             print('')
             raw_input('Press Enter to continue...')
@@ -496,6 +517,15 @@ def TEST1(STACK):
     raw_input('Press Enter to continue...')
 
 def TEST2(STACK):
+    
+    connection = sqlite3.connect(SETTINGS_DATABASE)
+    troll = connection.cursor()
+    troll.execute("SELECT option FROM main WHERE menu='visibility'")
+    visibility = troll.fetchone()[0]
+    troll.execute("SELECT option FROM main WHERE menu='case_sensitivity'")
+    case = troll.fetchone()[0]
+    connection.commit()
+    connection.close()
 
     Qlist = []
     Alist = []
@@ -544,22 +574,29 @@ def TEST2(STACK):
 
         print Qlist[Q_INDEX]
         user_response = raw_input(' ~> ')
-        if user_response == Alist[Q_INDEX]:
-            print('')
-            print(':-)')
-            CORRECT += 1
-            time.sleep(.5)
-            del Qlist[Q_INDEX]
-            del Alist[Q_INDEX]
-        else:
+        DO_WRONG = True
+        if case == '0':
+            if user_response.lower() == Alist[Q_INDEX].lower():
+                print('')
+                print(':-)')
+                CORRECT += 1
+                time.sleep(.5)
+                DO_WRONG = False
+        else: 
+            if user_response == Alist[Q_INDEX]:
+                print('')
+                print(':-)')
+                CORRECT += 1
+                time.sleep(.5)
+                DO_WRONG = False
+        if DO_WRONG:
             print('')
             print(commandColors.RED + 'Incorrect' + commandColors.DEFAULT)
-            print(commandColors.WHITE + 'Correct Answer: ' \
-            + commandColors.DEFAULT + Alist[Q_INDEX])
+            if visibility == '1':
+                print(commandColors.WHITE + 'Correct Answer: ' \
+                + commandColors.DEFAULT + Alist[Q_INDEX])
             INCORRECT += 1
             print('')
-            del Qlist[Q_INDEX]
-            del Alist[Q_INDEX]
             raw_input('Press Enter to continue...')
 
     subprocess.call('clear',shell=True)
@@ -574,6 +611,15 @@ def TEST2(STACK):
     raw_input('Press Enter to continue...')
 
 def TEST3(STACK):
+    
+    connection = sqlite3.connect(SETTINGS_DATABASE)
+    troll = connection.cursor()
+    troll.execute("SELECT option FROM main WHERE menu='visibility'")
+    visibility = troll.fetchone()[0]
+    troll.execute("SELECT option FROM main WHERE menu='case_sensitivity'")
+    case = troll.fetchone()[0]
+    connection.commit()
+    connection.close()
 
     Qlist = []
     Alist = []
@@ -622,16 +668,27 @@ def TEST3(STACK):
 
         print Qlist[Q_INDEX]
         user_response = raw_input(' ~> ')
-        if user_response == Alist[Q_INDEX]:
-            print('')
-            print(':-)')
-            CORRECT += 1
-            time.sleep(.5)
-        else:
+        DO_WRONG = True
+        if case == '0':
+            if user_response.lower() == Alist[Q_INDEX].lower():
+                print('')
+                print(':-)')
+                CORRECT += 1
+                time.sleep(.5)
+                DO_WRONG = False
+        else: 
+            if user_response == Alist[Q_INDEX]:
+                print('')
+                print(':-)')
+                CORRECT += 1
+                time.sleep(.5)
+                DO_WRONG = False
+        if DO_WRONG:
             print('')
             print(commandColors.RED + 'Incorrect' + commandColors.DEFAULT)
-            print(commandColors.WHITE + 'Correct Answer: ' \
-            + commandColors.DEFAULT + Alist[Q_INDEX])
+            if visibility == '1':
+                print(commandColors.WHITE + 'Correct Answer: ' \
+                + commandColors.DEFAULT + Alist[Q_INDEX])
             INCORRECT += 1
             print('')
             raw_input('Press Enter to continue...')
@@ -696,6 +753,13 @@ def DELETE(STACK):
         DELETE(STACK)
     
 def MAIN_MENU(EXPANDED):
+    connection = sqlite3.connect(SETTINGS_DATABASE)
+    troll = connection.cursor()
+    troll.execute("SELECT option FROM main WHERE menu='test_type'")
+    test_type = troll.fetchone()[0]
+    connection.commit()
+    connection.close()
+    
     subprocess.call('clear',shell=True)
     if CHECKED_STACK() == 'deadMonkey':
         STACK = 'NONE'
@@ -756,7 +820,12 @@ def MAIN_MENU(EXPANDED):
         if STACK == 'NONE':
             PRINT_WARN()
         else:
-            TEST3(STACK)
+            if test_type == '1':
+                TEST1(STACK)
+            elif test_type == '2':
+                TEST2(STACK)
+            elif test_type == '3':
+                TEST3(STACK)
     elif OPTION == 'history':
         if STACK == 'NONE':
             PRINT_WARN()
