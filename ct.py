@@ -6,7 +6,6 @@ import time
 import sqlite3
 from random import randint
 
-
 class commandColors:
     DEFAULT = '\033[0m'
     RED = '\033[31m'
@@ -28,28 +27,41 @@ def BANNER():
 # Variables
 CMD_HISTORY=(os.path.expanduser('~') + '/.CmdTest/history')
 CMD_STACKS=(os.path.expanduser('~') + '/.CmdTest/stacks')
+SETTINGS_DATABASE=(os.path.expanduser('~') + '/.CmdTest/settings.db')
 README = '/opt/cmdTest/README'
 
-def INIT_DIRS():
-    if os.path.isdir(CMD_HISTORY):
-        pass
-    else:
+def INIT():
+    if not os.path.isdir(CMD_HISTORY):
         os.makedirs(CMD_HISTORY)
-    if os.path.isdir(CMD_STACKS):
-        pass
-    else:
+    if not os.path.isdir(CMD_STACKS):
         os.makedirs(CMD_STACKS)
-
-# An empty file, having the same name as the stack,
-# but without extension, serves as a marker for the
-# currently checked out stack.
-
-def SANITY_CHECK():
-    MARKERS = 0
-    for i in (os.listdir(CMD_STACKS)):
-        if not i.endswith('.db'):
-            MARKERS += 1
-    return MARKERS
+    if not os.path.isfile(SETTINGS_DATABASE):
+        connection = sqlite3.connect(SETTINGS_DATABASE)
+        troll = connection.cursor()
+        troll.execute('CREATE TABLE main (menu TEXT, option TEXT)')
+        troll.execute('INSERT INTO main VALUES (?, ?)', ('test_type', 1))
+        troll.execute('INSERT INTO main VALUES (?, ?)', ('visibilty', 1))
+        connection.commit()
+        connection.close()
+    
+def SETTINGS():
+    connection = sqlite3.connect(SETTINGS_DATABASE)
+    troll = connection.cursor()
+    troll.execute("SELECT option FROM main WHERE MENU='test_type'")
+    print troll.fetchone()[0]
+    time.sleep(1)
+    #print('')
+    #print(' Test Flow')
+    #print('1. Randomized - Variable [ ]')
+    #print('2. Randomized - Full     [ ]')
+    #print('3. Ordered               [*]')
+        
+def NEW():
+    print ('No stacks detected, let\'s start by creating one.')
+    CREATE_STACK()
+    CHECKOUT_STACK(STACKNAME)
+    print ('\nDone!\n')
+    print ('Now that you have a stack, consider populate it with questions so you can take a test :-) \n')
 
 def CHECKED_STACK():
     CURRENT = 'deadMonkey'
@@ -304,7 +316,8 @@ def QUERY(STACK):
         print('No matches found.')
     raw_input('Press Enter to continue...')
 
-def TEST(STACK):
+
+def TEST1(STACK):
     # EXCLUSION_WINDOW is used to ensure questions are not repeated too often
     EXCLUSION_WINDOW = []
 
@@ -403,6 +416,164 @@ def TEST(STACK):
     print commandColors.DEFAULT
     connection.close()
 
+    COMMIT_HISTORY(STACK, STARTD, STARTT, DISPLAY_SCORE)
+    raw_input('Press Enter to continue...')
+
+def TEST2(STACK):
+
+    Qlist = []
+    Alist = []
+
+    STARTD=(time.strftime("%Y-%m-%d"))
+    STARTT=(time.strftime("%H:%M:%S"))
+
+    CORRECT = 0
+    INCORRECT = 0
+    SCORE = 0.0
+
+    # Populate Qlist and Alist with questions and answers
+
+    DATABASE = CMD_STACKS + '/' + STACK + '.db'
+    connection = sqlite3.connect(DATABASE)
+    troll = connection.cursor()
+    troll.execute('SELECT Question FROM main')
+    for row in troll.fetchall():
+        Qlist.append(row[0])
+    troll.execute('SELECT Answer FROM main')
+    for row in troll.fetchall():
+        Alist.append(row[0])
+
+    if len(Qlist) == 0:
+        print('You must populate this stack with questions prior to testing.')
+        time.sleep(1)
+        MAIN_MENU(0)
+
+    QUIZ_SIZE = len(Qlist)
+
+    for i in range(0, len(Qlist)):
+
+        Q_INDEX = randint(0, (len(Qlist) - 1))
+        subprocess.call('clear',shell=True)
+        # Header
+        if i == 0:
+            print commandColors.WHITE + \
+            ('Total %d | Correct %d | Answered %d' % (QUIZ_SIZE,CORRECT,i)) \
+            + commandColors.DEFAULT
+        else:
+            Score = float(CORRECT) / float(i)
+            print commandColors.WHITE + \
+            ('Total %d | Correct %d | Answered %d | Score ' % (QUIZ_SIZE,CORRECT,i)) \
+            + commandColors.CYAN + '%.2f' % (Score) + commandColors.DEFAULT
+        print('')
+
+        print Qlist[Q_INDEX]
+        user_response = raw_input(' ~> ')
+        if user_response == Alist[Q_INDEX]:
+            print('')
+            print(':-)')
+            CORRECT += 1
+            time.sleep(.5)
+            del Qlist[Q_INDEX]
+            del Alist[Q_INDEX]
+        else:
+            print('')
+            print(commandColors.RED + 'Incorrect' + commandColors.DEFAULT)
+            print(commandColors.WHITE + 'Correct Answer: ' \
+            + commandColors.DEFAULT + Alist[Q_INDEX])
+            INCORRECT += 1
+            print('')
+            del Qlist[Q_INDEX]
+            del Alist[Q_INDEX]
+            raw_input('Press Enter to continue...')
+
+    subprocess.call('clear',shell=True)
+    print('')
+    i += 1
+    Score = float(CORRECT) / float(i)
+    DISPLAY_SCORE = ('%.2f' % (Score))
+    print('Final Score = ' + commandColors.CYAN + DISPLAY_SCORE)
+    print commandColors.DEFAULT
+    connection.close()
+    COMMIT_HISTORY(STACK, STARTD, STARTT, DISPLAY_SCORE)
+    raw_input('Press Enter to continue...')
+
+def TEST3(STACK):
+
+    Qlist = []
+    Alist = []
+
+    STARTD=(time.strftime("%Y-%m-%d"))
+    STARTT=(time.strftime("%H:%M:%S"))
+
+    CORRECT = 0
+    INCORRECT = 0
+    SCORE = 0.0
+
+    # Populate Qlist and Alist with questions and answers
+
+    DATABASE = CMD_STACKS + '/' + STACK + '.db'
+    connection = sqlite3.connect(DATABASE)
+    troll = connection.cursor()
+    troll.execute('SELECT Question FROM main')
+    for row in troll.fetchall():
+        Qlist.append(row[0])
+    troll.execute('SELECT Answer FROM main')
+    for row in troll.fetchall():
+        Alist.append(row[0])
+
+    if len(Qlist) == 0:
+        print('You must populate this stack with questions prior to testing.')
+        time.sleep(1)
+        MAIN_MENU(0)
+
+    QUIZ_SIZE = len(Qlist)
+
+    for i in range(0, len(Qlist)):
+
+        Q_INDEX = i
+        subprocess.call('clear',shell=True)
+        # Header
+        if i == 0:
+            print commandColors.WHITE + \
+            ('Total %d | Correct %d | Answered %d' % (QUIZ_SIZE,CORRECT,i)) \
+            + commandColors.DEFAULT
+        else:
+            Score = float(CORRECT) / float(i)
+            print commandColors.WHITE + \
+            ('Total %d | Correct %d | Answered %d | Score ' % (QUIZ_SIZE,CORRECT,i)) \
+            + commandColors.CYAN + '%.2f' % (Score) + commandColors.DEFAULT
+        print('')
+
+        print Qlist[Q_INDEX]
+        user_response = raw_input(' ~> ')
+        if user_response == Alist[Q_INDEX]:
+            print('')
+            print(':-)')
+            CORRECT += 1
+            time.sleep(.5)
+        else:
+            print('')
+            print(commandColors.RED + 'Incorrect' + commandColors.DEFAULT)
+            print(commandColors.WHITE + 'Correct Answer: ' \
+            + commandColors.DEFAULT + Alist[Q_INDEX])
+            INCORRECT += 1
+            print('')
+            raw_input('Press Enter to continue...')
+
+    subprocess.call('clear',shell=True)
+    print('')
+    i += 1
+    Score = float(CORRECT) / float(i)
+    DISPLAY_SCORE = ('%.2f' % (Score))
+    print('Final Score = ' + commandColors.CYAN + DISPLAY_SCORE)
+    print commandColors.DEFAULT
+    connection.close()
+    COMMIT_HISTORY(STACK, STARTD, STARTT, DISPLAY_SCORE)
+    raw_input('Press Enter to continue...')
+
+
+
+def COMMIT_HISTORY(STACK, STARTD, STARTT, DISPLAY_SCORE):
     TEST_HISTORY = (CMD_HISTORY + '/' + STACK + '.db')
     if not os.path.isfile(TEST_HISTORY):
         connection = sqlite3.connect(TEST_HISTORY)
@@ -416,8 +587,6 @@ def TEST(STACK):
     troll.execute('INSERT INTO main VALUES (?, ?, ?)', (STARTD, STARTT, str(DISPLAY_SCORE)))
     connection.commit()
     connection.close()
-
-    raw_input('Press Enter to continue...')
 
 def DELETE(STACK):
     TARGET_STACK = CMD_STACKS + '/' + STACK + '.db'
@@ -450,14 +619,6 @@ def DELETE(STACK):
         time.sleep(1)
         DELETE(STACK)
     
-
-def NEW():
-    print ('No stacks detected, let\'s start by creating one.')
-    CREATE_STACK()
-    CHECKOUT_STACK(STACKNAME)
-    print ('\nDone!\n')
-    print ('Now that you have a stack, consider populate it with questions so you can take a test :-) \n')
-
 def MAIN_MENU(EXPANDED):
     subprocess.call('clear',shell=True)
     if CHECKED_STACK() == 'deadMonkey':
@@ -519,7 +680,7 @@ def MAIN_MENU(EXPANDED):
         if STACK == 'NONE':
             PRINT_WARN()
         else:
-            TEST(STACK)
+            TEST3(STACK)
     elif OPTION == 'history':
         if STACK == 'NONE':
             PRINT_WARN()
@@ -536,7 +697,7 @@ def MAIN_MENU(EXPANDED):
         else:
             QUERY(STACK)
     elif OPTION == 'settings':
-        pass
+        SETTINGS()
     elif OPTION == 'help':
         MAIN_MENU(1)
     elif OPTION == 'select':
@@ -574,7 +735,8 @@ def MAIN_MENU(EXPANDED):
         MAIN_MENU(0)
     else:
         MAIN_MENU(1)
-    
+
+INIT()
 BANNER()
 time.sleep(.5)
 MAIN_MENU(0)
