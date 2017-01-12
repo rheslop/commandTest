@@ -1,22 +1,22 @@
-CommandTest (formerly cmdTest) - still in Development
+CommandTest (formerly cmdTest)
 ==============
-v 0.5
+v 0.6
 
-cmdTest is a simple command line base question/answer testing system designed primarily for memorizing user-defined commands or questions. This kind of utility can be especially helpful when preparing for practicum based certification, but can be used for any custom created test.
+CommandTest is a command line based question/answer testing system designed primarily for memorizing user-defined questions.
 
 The first time the application is run, you will be guided to create your first stack (This is stores a sqlite database in .CmdTest/stacks). You can then populate your stack with questions. 
 
 Once a stack is created, it is automatically checked out. If more than one stack of questions is desired, you can switch between stacks. Each stack is a single sqlite database, with a single table.  CommandTest 'remembers' the checked stack by placing an empty file in the same directory, with the same name as the sqlite database without the extension. This means that if you exit and restart CommandTest, the same stack will remain checked out.
 
-When taking a test, provide the number of questions that should be asked (not associated with the number of questions in the stack).  Questions will be randomized with the exception of the most recent (variably sized buffer) to avoid redundancy. Because the same question is never presented twice in a row, if there is only one question in your stack, the quiz size will always be one.
+Use the settings to modify how a test is taken.
 
-CommandTest is case sensitive. Answers MUST match the originally created answer to include case. A history of scores can be accessed via the main menu.
+ 1. Randomized - Variable
+    Any number of questions can be specified, drawing randomly from your stack.  A small buffer of recently asked questions (variable in size, based on number of questions in stack) is kept to ensure the most recent questions are not re-asked.
+ 2. Randomized - Full
+    All questions from your stack are displayed, in random order.
+ 3. Ordered
+    All questions from your stack are displayed, in the order in which they were created.
 
-Optimal use case:
+CommandTest is case sensitive by default, but this behavior can also be changed in settings. Answers MUST match the originally created anA history of scores can be accessed via the main menu.
 
-Studying for practicum exam wherein commands must be memorized. 
-THIS DOES NOT REPLACE ACTUAL EXPERIENCE.
-
-	Why should I use this tool then?
-
-Environment setups and workflows take time configure; creating a testing environment helps to aid memorizing commands that will be used in your work flow. This provides for faster memorization, and easier workflow, and better recall on an exam.
+CommandTest was originally developed as an additional tool to help study for commandline-based practicum tests (Example: Red Hat / Cisco).
