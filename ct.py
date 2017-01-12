@@ -403,7 +403,7 @@ def TEST(STACK):
     print commandColors.DEFAULT
     connection.close()
 
-    TEST_HISTORY =(CMD_HISTORY + '/' + STACK + '.db')
+    TEST_HISTORY = (CMD_HISTORY + '/' + STACK + '.db')
     if not os.path.isfile(TEST_HISTORY):
         connection = sqlite3.connect(TEST_HISTORY)
         troll = connection.cursor()
@@ -419,6 +419,37 @@ def TEST(STACK):
 
     raw_input('Press Enter to continue...')
 
+def DELETE(STACK):
+    TARGET_STACK = CMD_STACKS + '/' + STACK + '.db'
+    CHECK_MARKER = CMD_STACKS + '/' + STACK
+
+    subprocess.call('clear',shell=True)
+    print('')
+    print commandColors.RED + 'Are you sure you want to PERMANENTLY delete stack ' + STACK + '?'
+    print('Type \'YES\' to remove, \'exit\' to abort.')
+    print commandColors.DEFAULT + ('')
+    ACTION = raw_input(' ~> ')
+    if ACTION == 'YES':
+
+        print commandColors.RED + 'DELETING',
+        time.sleep(.25)
+        print'.',
+        time.sleep(.25)
+        print'.',
+        time.sleep(.25)
+        print'.' + commandColors.DEFAULT
+
+        if os.path.isfile(TARGET_STACK):
+            os.remove(TARGET_STACK)
+        if os.path.isfile(CHECK_MARKER):
+            os.remove(CHECK_MARKER)
+    elif ACTION == 'exit':
+        MAIN_MENU(0)
+    else:
+        print commandColors.RED + ACTION + ' is not a recognized response.'
+        time.sleep(1)
+        DELETE(STACK)
+    
 
 def NEW():
     print ('No stacks detected, let\'s start by creating one.')
@@ -440,7 +471,7 @@ def MAIN_MENU(EXPANDED):
     def PRINT_WARN():
         print commandColors.RED + \
         'A stack must be checked out first.'
-        print 'Use' + commandColors.CYAN + ' stack ' \
+        print 'Use' + commandColors.CYAN + ' select ' \
         + commandColors.RED + 'for checkout.'
         time.sleep(1.5)
         subprocess.call('clear',shell=True)
@@ -525,7 +556,10 @@ def MAIN_MENU(EXPANDED):
         else:
             PRUNE(STACK)
     elif OPTION == 'delete':
-        pass
+        if STACK == 'NONE':
+            PRINT_WARN()
+        else:
+            DELETE(STACK)
     elif OPTION == 'exit':
         exit()
     elif OPTION == 'clear':
