@@ -28,7 +28,6 @@ def BANNER():
 CMD_HISTORY=(os.path.expanduser('~') + '/.CmdTest/history')
 CMD_STACKS=(os.path.expanduser('~') + '/.CmdTest/stacks')
 SETTINGS_DATABASE=(os.path.expanduser('~') + '/.CmdTest/settings.db')
-README = '/opt/cmdTest/README'
 
 def INIT():
     if not os.path.isdir(CMD_HISTORY):
@@ -132,13 +131,6 @@ def SETTINGS():
             connection.close()
             SETTINGS()
 
-def NEW():
-    print ('No stacks detected, let\'s start by creating one.')
-    CREATE_STACK()
-    CHECKOUT_STACK(STACKNAME)
-    print ('\nDone!\n')
-    print ('Now that you have a stack, consider populate it with questions so you can take a test :-) \n')
-
 def CHECKED_STACK():
     CURRENT = 'deadMonkey'
     for i in (os.listdir(CMD_STACKS)):
@@ -179,8 +171,9 @@ def CLEAR_CHECKOUT():
 
 def CHECKOUT_STACK():
     subprocess.call('clear',shell=True)
-    print commandColors.WHITE + 'Select stack:' + commandColors.DEFAULT
     print('')
+    print commandColors.WHITE + '     Select stack:' + commandColors.DEFAULT
+    print('     ============')
     for i in (os.listdir(CMD_STACKS)):
         if i.endswith('.db'):
             print('     ') + i[:-3]
@@ -391,7 +384,6 @@ def QUERY(STACK):
     if matches == 0:
         print('No matches found.')
     raw_input('Press Enter to continue...')
-
 
 def TEST1(STACK):
     
@@ -724,7 +716,7 @@ def COMMIT_HISTORY(STACK, STARTD, STARTT, DISPLAY_SCORE):
 def DELETE(STACK):
     TARGET_STACK = CMD_STACKS + '/' + STACK + '.db'
     CHECK_MARKER = CMD_STACKS + '/' + STACK
-
+    HISTORY_FILE = CMD_HISTORY + '/' + STACK + '.db'
     subprocess.call('clear',shell=True)
     print('')
     print commandColors.RED + 'Are you sure you want to PERMANENTLY delete stack ' + STACK + '?'
@@ -745,6 +737,9 @@ def DELETE(STACK):
             os.remove(TARGET_STACK)
         if os.path.isfile(CHECK_MARKER):
             os.remove(CHECK_MARKER)
+        if os.path.isfile(HISTORY_FILE):
+            os.remove(HISTORY_FILE)
+
     elif ACTION == 'exit':
         MAIN_MENU(0)
     else:
@@ -759,8 +754,9 @@ def MAIN_MENU(EXPANDED):
     test_type = troll.fetchone()[0]
     connection.commit()
     connection.close()
-    
+
     subprocess.call('clear',shell=True)
+
     if CHECKED_STACK() == 'deadMonkey':
         STACK = 'NONE'
         STYLE = commandColors.RED
@@ -778,6 +774,13 @@ def MAIN_MENU(EXPANDED):
         subprocess.call('clear',shell=True)
         MAIN_MENU(0)
 
+    if os.listdir(CMD_STACKS) == []:
+        print(commandColors.WHITE + '+---------------------------------------------+')
+        print commandColors.WHITE + '| It looks like you haven\'t created any tests.|'
+        print '| You won\'t be able to do much without one,   |'
+        print '| use the ' + commandColors.CYAN + 'create' + commandColors.WHITE + ' command below to do so.      |'
+        print('+---------------------------------------------+')
+        print commandColors.DEFAULT + ('')
 
     def MENU_SIMPLE():
         print \
