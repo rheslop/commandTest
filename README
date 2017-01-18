@@ -4,7 +4,7 @@ v 0.6
 
 CommandTest is a command line based question/answer testing system designed for memorizing user-defined questions.
 
-The first time the application is run, you will need to create your first stack. (This is stores a sqlite database in ~/.CmdTest/stacks, which is created for you). You can then populate your stack with questions. 
+CommandTest can be run either by running the ct.py python exectutable file - or if it is installed, by typing 'ct' at the terminal. The first time the application is run, you will need to create your first stack. (This is stores a sqlite database in ~/.CmdTest/stacks, which is created for you). You can then populate your first stack with questions. 
 
 Once a stack is created, it is automatically checked out. (You can have more than one stack of questions and switch between them as desired). The checked out stack, as well as the settings remain persistent even when exiting the program.
 
