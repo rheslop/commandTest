@@ -8,9 +8,9 @@ from random import randint
 
 class cthl:
     DEFAULT = '\033[0m'
-    RED = '\033[31m'
-    CYAN = '\033[36m'
-    WHITE = '\033[37m'
+    RED = '\033[0;31m'
+    CYAN = '\033[0;36m'
+    BOLD = '\033[1m'
 
 def BANNER():
     print (' ____ _______   _____   __   ___    __   ______')
@@ -144,7 +144,7 @@ def HISTORY(STACK):
     SCORES = []
     TEST_HISTORY =(CMD_HISTORY + '/' + STACK + '.db')
     if not os.path.isfile(TEST_HISTORY):
-        print cthl.RED + 'There isn\'t history for this test yet.'
+        print cthl.RED + 'There isn\'t history for this test yet.' + cthl.DEFAULT
     else:
         connection = sqlite3.connect(TEST_HISTORY)
         troll = connection.cursor()
@@ -158,7 +158,7 @@ def HISTORY(STACK):
         for row in troll.fetchall():
             SCORES.append(row[0])
         for H_INDEX in range(0, len(DATES)):
-            print cthl.WHITE + DATES[H_INDEX] + ' ' + \
+            print cthl.BOLD + DATES[H_INDEX] + ' ' + \
             TIMES[H_INDEX] + cthl.CYAN + ' ' + \
             SCORES[H_INDEX] + cthl.DEFAULT
 
@@ -172,7 +172,7 @@ def CLEAR_CHECKOUT():
 def CHECKOUT_STACK():
     subprocess.call('clear',shell=True)
     print('')
-    print cthl.WHITE + '     Select stack:' + cthl.DEFAULT
+    print cthl.BOLD + '     Select stack:' + cthl.DEFAULT
     print('     ============')
     for i in (os.listdir(CMD_STACKS)):
         if i.endswith('.db'):
@@ -233,9 +233,9 @@ def PRUNE(STACK):
 
     for Q_INDEX in range(0, len(Qlist)):
         NUM = str(Q_INDEX + 1)
-        print cthl.RED + NUM + '. ' + \
-        cthl.WHITE + 'Q: ' + cthl.DEFAULT + \
-        Qlist[Q_INDEX] + ' ' + cthl.WHITE + 'A: ' + \
+        print NUM + '. ' + cthl.DEFAULT + \
+        cthl.BOLD + 'Q: ' + cthl.DEFAULT + \
+        Qlist[Q_INDEX] + ' ' + cthl.BOLD + 'A: ' + \
         cthl.DEFAULT + Alist[Q_INDEX]
     print('')
     print('Choose the Q/A pair to delete by number.\nThis will DELETE the Q/A pair from the stack.')
@@ -271,25 +271,25 @@ def PRUNE(STACK):
 def POPULATE(STACK):
     subprocess.call('clear',shell=True)
     print('')
-    print cthl.WHITE + 'Question:'
-    print cthl.WHITE + 'Answer:' + cthl.DEFAULT
+    print cthl.BOLD + 'Question:'
+    print cthl.BOLD + 'Answer:' + cthl.DEFAULT
     print('')
     QUESTION = raw_input('Question ~> ')
     subprocess.call('clear',shell=True)
 
     print('')
-    print cthl.WHITE + 'Question: ' + \
+    print cthl.BOLD + 'Question: ' + \
     cthl.CYAN + QUESTION + cthl.DEFAULT
-    print cthl.WHITE + 'Answer:' + cthl.DEFAULT
+    print cthl.BOLD + 'Answer:' + cthl.DEFAULT
     print('')
     ANSWER = raw_input('Answer ~> ')
 
     def POPULATE_MENU():
         subprocess.call('clear',shell=True)
         print('')
-        print cthl.WHITE + 'Question: ' + \
+        print cthl.BOLD + 'Question: ' + \
         cthl.CYAN + QUESTION + cthl.DEFAULT
-        print cthl.WHITE + 'Answer: ' + \
+        print cthl.BOLD + 'Answer: ' + \
         cthl.CYAN + ANSWER + cthl.DEFAULT
         print('')
         print('Options:')
@@ -340,10 +340,10 @@ def DISPLAY(STACK):
         Alist.append(row[0])
 
     for Q_INDEX in range(0, len(Qlist)):
-         print cthl.WHITE + 'Question: ' + \
-         cthl.DEFAULT + Qlist[Q_INDEX]
-         print cthl.WHITE + 'Answer: ' + \
-         cthl.DEFAULT + Alist[Q_INDEX]
+         print cthl.BOLD + 'Question:' + \
+         cthl.DEFAULT + ' ' + Qlist[Q_INDEX]
+         print cthl.BOLD + 'Answer:' + \
+         cthl.DEFAULT + ' ' + Alist[Q_INDEX]
          print('')
     connection.close()
 
@@ -369,16 +369,16 @@ def QUERY(STACK):
     for Q_INDEX in range(0, len(Qlist)):
         if Qlist[Q_INDEX].find(ARG) != -1:
             matches += 1
-            print cthl.WHITE + 'Question: ' + \
+            print cthl.BOLD + 'Question: ' + \
             cthl.DEFAULT + Qlist[Q_INDEX]
-            print cthl.WHITE + 'Answer: ' + \
+            print cthl.BOLD + 'Answer: ' + \
             cthl.DEFAULT + Alist[Q_INDEX]
             print('')
         elif Alist[Q_INDEX].find(ARG) != -1:
             matches += 1
-            print cthl.WHITE + 'Question: ' + \
+            print cthl.BOLD + 'Question: ' + \
             cthl.DEFAULT + Qlist[Q_INDEX]
-            print cthl.WHITE + 'Answer: ' + \
+            print cthl.BOLD + 'Answer: ' + \
             cthl.DEFAULT + Alist[Q_INDEX]
             print('')
     if matches == 0:
@@ -459,12 +459,12 @@ def TEST1(STACK):
         subprocess.call('clear',shell=True)
         # Header
         if i == 0:
-            print cthl.WHITE + \
+            print cthl.BOLD + \
             ('Total %d | Correct %d | Answered %d' % (QUIZ_SIZE,CORRECT,i)) \
             + cthl.DEFAULT
         else:
             Score = float(CORRECT) / float(i)
-            print cthl.WHITE + \
+            print cthl.BOLD + \
             ('Total %d | Correct %d | Answered %d | Score ' % (QUIZ_SIZE,CORRECT,i)) \
             + cthl.CYAN + '%.2f' % (Score) + cthl.DEFAULT
         print('')
@@ -490,7 +490,7 @@ def TEST1(STACK):
             print('')
             print(cthl.RED + 'Incorrect' + cthl.DEFAULT)
             if visibility == '1':
-                print(cthl.WHITE + 'Correct Answer: ' \
+                print(cthl.BOLD + 'Correct Answer: ' \
                 + cthl.DEFAULT + Alist[Q_INDEX])
             INCORRECT += 1
             print('')
@@ -554,12 +554,12 @@ def TEST2(STACK):
         subprocess.call('clear',shell=True)
         # Header
         if i == 0:
-            print cthl.WHITE + \
+            print cthl.BOLD + \
             ('Total %d | Correct %d | Answered %d' % (QUIZ_SIZE,CORRECT,i)) \
             + cthl.DEFAULT
         else:
             Score = float(CORRECT) / float(i)
-            print cthl.WHITE + \
+            print cthl.BOLD + \
             ('Total %d | Correct %d | Answered %d | Score ' % (QUIZ_SIZE,CORRECT,i)) \
             + cthl.CYAN + '%.2f' % (Score) + cthl.DEFAULT
         print('')
@@ -585,7 +585,7 @@ def TEST2(STACK):
             print('')
             print(cthl.RED + 'Incorrect' + cthl.DEFAULT)
             if visibility == '1':
-                print(cthl.WHITE + 'Correct Answer: ' \
+                print(cthl.BOLD + 'Correct Answer: ' \
                 + cthl.DEFAULT + Alist[Q_INDEX])
             INCORRECT += 1
             print('')
@@ -648,12 +648,12 @@ def TEST3(STACK):
         subprocess.call('clear',shell=True)
         # Header
         if i == 0:
-            print cthl.WHITE + \
+            print cthl.BOLD + \
             ('Total %d | Correct %d | Answered %d' % (QUIZ_SIZE,CORRECT,i)) \
             + cthl.DEFAULT
         else:
             Score = float(CORRECT) / float(i)
-            print cthl.WHITE + \
+            print cthl.BOLD + \
             ('Total %d | Correct %d | Answered %d | Score ' % (QUIZ_SIZE,CORRECT,i)) \
             + cthl.CYAN + '%.2f' % (Score) + cthl.DEFAULT
         print('')
@@ -679,7 +679,7 @@ def TEST3(STACK):
             print('')
             print(cthl.RED + 'Incorrect' + cthl.DEFAULT)
             if visibility == '1':
-                print(cthl.WHITE + 'Correct Answer: ' \
+                print(cthl.BOLD + 'Correct Answer: ' \
                 + cthl.DEFAULT + Alist[Q_INDEX])
             INCORRECT += 1
             print('')
@@ -769,23 +769,23 @@ def MAIN_MENU(EXPANDED):
         print cthl.RED + \
         'A stack must be checked out first.'
         print 'Use' + cthl.CYAN + ' select ' \
-        + cthl.RED + 'for checkout.'
+        + cthl.RED + 'for checkout.' + cthl.DEFAULT
         time.sleep(1.5)
         subprocess.call('clear',shell=True)
         MAIN_MENU(0)
 
     if os.listdir(CMD_STACKS) == []:
-        print(cthl.WHITE + '+---------------------------------------------+')
-        print cthl.WHITE + '| It looks like you haven\'t created any tests.|'
+        print(cthl.BOLD + '+---------------------------------------------+')
+        print cthl.BOLD + '| It looks like you haven\'t created any tests.|'
         print '| You won\'t be able to do much without one,   |'
-        print '| use the ' + cthl.CYAN + 'create' + cthl.WHITE + ' command below to do so.      |'
+        print '| use the ' + cthl.CYAN + 'create' + cthl.BOLD + ' command below to do so.      |'
         print('+---------------------------------------------+')
         print cthl.DEFAULT + ('')
 
     def MENU_SIMPLE():
         print \
-        cthl.WHITE + 'Welcome to CommandTest - Stack: ' + \
-        STYLE + STACK + cthl.DEFAULT
+        cthl.BOLD + 'Welcome to CommandTest - Stack:' + \
+        cthl.DEFAULT + ' ' + STYLE + STACK + cthl.DEFAULT
         print('')
         print('Options:')
         print('')
@@ -799,7 +799,7 @@ def MAIN_MENU(EXPANDED):
 
     def MENU_LONG():
         print \
-        cthl.WHITE + 'Welcome to CommandTest - Stack: ' + \
+        cthl.BOLD + 'Welcome to CommandTest - Stack: ' + \
         STYLE + STACK + cthl.DEFAULT
         print('')
         print('Options:')
