@@ -778,7 +778,7 @@ def MAIN_MENU(EXPANDED):
         print(cthl.BOLD + '+---------------------------------------------+')
         print cthl.BOLD + '| It looks like you haven\'t created any tests.|'
         print '| You won\'t be able to do much without one,   |'
-        print '| use the ' + cthl.CYAN + 'create' + cthl.BOLD + ' command below to do so.      |'
+        print '| use the ' + cthl.CYAN + 'create' + cthl.DEFAULT + cthl.BOLD + ' command below to do so.      |'
         print('+---------------------------------------------+')
         print cthl.DEFAULT + ('')
 
