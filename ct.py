@@ -6,11 +6,18 @@ import time
 import sqlite3
 from random import randint
 
-class cthl:
-    DEFAULT = '\033[0m'
-    RED = '\033[0;31m'
-    CYAN = '\033[0;36m'
-    BOLD = '\033[1m'
+class ctext(object):
+    def __init__(self, text):
+       self.text = text
+
+    def warn(self):
+        return('\033[0;31m' + self.text + '\033[0m')
+
+    def bold(self):
+        return('\033[1m' + self.text + '\033[0m')
+
+    def highlight(self):
+        return('\033[0;36m' + self.text + '\033[0m')
 
 def BANNER():
     print (' ____ _______   _____   __   ___    __   ______')
@@ -101,13 +108,11 @@ def SETTINGS():
         try:
             test_int = int(USER_SELECTION)
         except ValueError:
-            print cthl.RED + USER_SELECTION + ' is not a number.  Please select menu option. (1 - 7)'
-            print cthl.DEFAULT
+            print ctext(USER_SELECTION).warn() + ' is not a number. Please select menu option. (1 - 7)'
             time.sleep(1)
             SETTINGS()
         if not 0 < int(USER_SELECTION) < 8:
-            print cthl.RED + USER_SELECTION + ' is out of bounds.  Please select menu option between 1 and 7.'
-            print cthl.DEFAULT
+            print ctext(USER_SELECTION).warn() + ' is out of bounds. Please select menu option between 1 and 7.'
             time.sleep(1)
             SETTINGS()
         else:
@@ -144,7 +149,7 @@ def HISTORY(STACK):
     SCORES = []
     TEST_HISTORY =(CMD_HISTORY + '/' + STACK + '.db')
     if not os.path.isfile(TEST_HISTORY):
-        print cthl.RED + 'There isn\'t history for this test yet.' + cthl.DEFAULT
+        print ctext('There isn\'t history for this test yet.').warn()
     else:
         connection = sqlite3.connect(TEST_HISTORY)
         troll = connection.cursor()
@@ -158,9 +163,8 @@ def HISTORY(STACK):
         for row in troll.fetchall():
             SCORES.append(row[0])
         for H_INDEX in range(0, len(DATES)):
-            print cthl.BOLD + DATES[H_INDEX] + ' ' + \
-            TIMES[H_INDEX] + cthl.CYAN + ' ' + \
-            SCORES[H_INDEX] + cthl.DEFAULT
+            print ctext(DATES[H_INDEX]).bold() + ' ' + \
+            TIMES[H_INDEX] + ' ' + ctext(SCORES[H_INDEX]).highlight()
 
     raw_input('Press Enter to continue...')
 
@@ -172,7 +176,7 @@ def CLEAR_CHECKOUT():
 def CHECKOUT_STACK():
     subprocess.call('clear',shell=True)
     print('')
-    print cthl.BOLD + '     Select stack:' + cthl.DEFAULT
+    print ctext('     Select stack:').bold()
     print('     ============')
     for i in (os.listdir(CMD_STACKS)):
         if i.endswith('.db'):
@@ -186,9 +190,7 @@ def CHECKOUT_STACK():
             CLEAR_CHECKOUT()
             open(CMD_STACKS + '/' + SELECTION, 'w').close
         else:
-            print cthl.RED + \
-            ('%s is not a valid option.' % SELECTION) + \
-            cthl.DEFAULT
+            print ctext('%s is not a valid option.' % SELECTION).warn()
             time.sleep(1)
             CHECKOUT_STACK()
     else:
@@ -233,10 +235,10 @@ def PRUNE(STACK):
 
     for Q_INDEX in range(0, len(Qlist)):
         NUM = str(Q_INDEX + 1)
-        print NUM + '. ' + cthl.DEFAULT + \
-        cthl.BOLD + 'Q: ' + cthl.DEFAULT + \
-        Qlist[Q_INDEX] + ' ' + cthl.BOLD + 'A: ' + \
-        cthl.DEFAULT + Alist[Q_INDEX]
+        print ctext(NUM).bold() + '. ' + \
+        ctext('Q: ').highlight() + Qlist[Q_INDEX] + ' ' + \
+        ctext('A: ').highlight() + Alist[Q_INDEX]
+
     print('')
     print('Choose the Q/A pair to delete by number.\nThis will DELETE the Q/A pair from the stack.')
     print('\nType \'exit\' or \'quit\' to return to main menu.\n')
@@ -247,17 +249,17 @@ def PRUNE(STACK):
         try:
             Q_INDEX = int(DELETE_ME) - 1
         except ValueError:
-            print cthl.RED + 'ValueError: I don\'t recognize that as a number.' + cthl.DEFAULT
+            print ctext('ValueError: I don\'t recognize that as a number.').warn()
             time.sleep(1)
             PRUNE(STACK)
     if int(DELETE_ME) <= 0:
-        print cthl.RED + 'IndexError: I\'m not seeing number %s' % DELETE_ME
+        print ctext('IndexError: I\'m not seeing number %s' % DELETE_ME).warn()
         time.sleep(1)
         PRUNE(STACK)
     try:
         TARGET = ID_list[Q_INDEX]
     except IndexError:
-        print cthl.RED + 'IndexError: I\'m not seeing number %s' % DELETE_ME
+        print ctext('IndexError: I\'m not seeing number %s' % DELETE_ME).warn()
         time.sleep(1)
         PRUNE(STACK)
     DATABASE = CMD_STACKS + '/' + STACK + '.db'
@@ -271,26 +273,24 @@ def PRUNE(STACK):
 def POPULATE(STACK):
     subprocess.call('clear',shell=True)
     print('')
-    print cthl.BOLD + 'Question:'
-    print cthl.BOLD + 'Answer:' + cthl.DEFAULT
+    print ctext('Question:').bold()
+    print ctext('Answer:').bold()
     print('')
     QUESTION = raw_input('Question ~> ')
     subprocess.call('clear',shell=True)
 
     print('')
-    print cthl.BOLD + 'Question: ' + \
-    cthl.CYAN + QUESTION + cthl.DEFAULT
-    print cthl.BOLD + 'Answer:' + cthl.DEFAULT
+    print ctext('Question: ').bold() + ctext(QUESTION).highlight()
+    print ctext('Answer: ').bold()
     print('')
     ANSWER = raw_input('Answer ~> ')
 
     def POPULATE_MENU():
         subprocess.call('clear',shell=True)
         print('')
-        print cthl.BOLD + 'Question: ' + \
-        cthl.CYAN + QUESTION + cthl.DEFAULT
-        print cthl.BOLD + 'Answer: ' + \
-        cthl.CYAN + ANSWER + cthl.DEFAULT
+        print ctext('Question: ').bold() + ctext(QUESTION).highlight()
+        print ctext('Answer: ').bold() + ctext(ANSWER).highlight()
+
         print('')
         print('Options:')
         print ('')
@@ -319,8 +319,7 @@ def POPULATE(STACK):
         elif OPTION == 'exit':
             MAIN_MENU(0)
         else:
-            print cthl.RED + OPTION + ' is not a valid option.' + \
-            cthl.DEFAULT
+            print ctext('%s is not a valid option.' % OPTION).warn()
             time.sleep(1)
             POPULATE_MENU()
     POPULATE_MENU()
@@ -340,10 +339,8 @@ def DISPLAY(STACK):
         Alist.append(row[0])
 
     for Q_INDEX in range(0, len(Qlist)):
-         print cthl.BOLD + 'Question:' + \
-         cthl.DEFAULT + ' ' + Qlist[Q_INDEX]
-         print cthl.BOLD + 'Answer:' + \
-         cthl.DEFAULT + ' ' + Alist[Q_INDEX]
+         print ctext('Question:').bold() + ' %s' % Qlist[Q_INDEX]
+         print ctext('Answer:').bold() + ' %s' % Alist[Q_INDEX]
          print('')
     connection.close()
 
@@ -369,17 +366,13 @@ def QUERY(STACK):
     for Q_INDEX in range(0, len(Qlist)):
         if Qlist[Q_INDEX].find(ARG) != -1:
             matches += 1
-            print cthl.BOLD + 'Question: ' + \
-            cthl.DEFAULT + Qlist[Q_INDEX]
-            print cthl.BOLD + 'Answer: ' + \
-            cthl.DEFAULT + Alist[Q_INDEX]
+            print ctext('Question: ').bold() + Qlist[Q_INDEX]
+            print ctext('Answer: ').bold() + Alist[Q_INDEX]
             print('')
         elif Alist[Q_INDEX].find(ARG) != -1:
             matches += 1
-            print cthl.BOLD + 'Question: ' + \
-            cthl.DEFAULT + Qlist[Q_INDEX]
-            print cthl.BOLD + 'Answer: ' + \
-            cthl.DEFAULT + Alist[Q_INDEX]
+            print ctext('Question: ').bold() + Qlist[Q_INDEX]
+            print ctext('Answer: ').bold() + Alist[Q_INDEX]
             print('')
     if matches == 0:
         print('No matches found.')
@@ -434,7 +427,7 @@ def TEST1(STACK):
         try:
             QUIZ_SIZE = int(raw_input(' ~> '))
         except ValueError:
-            print cthl.RED + 'Error!'
+            print ctext('Error!').warn()
             time.sleep(1)
             MAIN_MENU(0)
 
@@ -459,14 +452,11 @@ def TEST1(STACK):
         subprocess.call('clear',shell=True)
         # Header
         if i == 0:
-            print cthl.BOLD + \
-            ('Total %d | Correct %d | Answered %d' % (QUIZ_SIZE,CORRECT,i)) \
-            + cthl.DEFAULT
+            print ctext('Total %d | Correct %d | Answered %d' % (QUIZ_SIZE,CORRECT,i)).bold()
         else:
             Score = float(CORRECT) / float(i)
-            print cthl.BOLD + \
-            ('Total %d | Correct %d | Answered %d | Score ' % (QUIZ_SIZE,CORRECT,i)) \
-            + cthl.CYAN + '%.2f' % (Score) + cthl.DEFAULT
+            print ctext('Total %d | Correct %d | Answered %d | Score ' % (QUIZ_SIZE,CORRECT,i)).bold() \
+            + ctext('%.2f' % Score).highlight()
         print('')
         print Qlist[Q_INDEX]
         user_response = raw_input(' ~> ')
@@ -488,10 +478,9 @@ def TEST1(STACK):
                 DO_WRONG = False
         if DO_WRONG:
             print('')
-            print(cthl.RED + 'Incorrect' + cthl.DEFAULT)
+            print ctext('Incorrect').warn()
             if visibility == '1':
-                print(cthl.BOLD + 'Correct Answer: ' \
-                + cthl.DEFAULT + Alist[Q_INDEX])
+                print ctext('Correct Answer: ').bold() + Alist[Q_INDEX]
             INCORRECT += 1
             print('')
             raw_input('Press Enter to continue...')
@@ -501,8 +490,7 @@ def TEST1(STACK):
     i += 1
     Score = float(CORRECT) / float(i)
     DISPLAY_SCORE = ('%.2f' % (Score))
-    print('Final Score = ' + cthl.CYAN + DISPLAY_SCORE)
-    print cthl.DEFAULT
+    print('Final Score = ') + ctext(DISPLAY_SCORE).highlight()
     connection.close()
 
     COMMIT_HISTORY(STACK, STARTD, STARTT, DISPLAY_SCORE)
@@ -554,14 +542,11 @@ def TEST2(STACK):
         subprocess.call('clear',shell=True)
         # Header
         if i == 0:
-            print cthl.BOLD + \
-            ('Total %d | Correct %d | Answered %d' % (QUIZ_SIZE,CORRECT,i)) \
-            + cthl.DEFAULT
+            print ctext('Total %d | Correct %d | Answered %d' % (QUIZ_SIZE,CORRECT,i)).bold()
         else:
             Score = float(CORRECT) / float(i)
-            print cthl.BOLD + \
-            ('Total %d | Correct %d | Answered %d | Score ' % (QUIZ_SIZE,CORRECT,i)) \
-            + cthl.CYAN + '%.2f' % (Score) + cthl.DEFAULT
+            print ctext('Total %d | Correct %d | Answered %d | Score ' % (QUIZ_SIZE,CORRECT,i)).bold() \
+            + ctext('%.2f' % (Score)).highlight()
         print('')
 
         print Qlist[Q_INDEX]
@@ -583,10 +568,9 @@ def TEST2(STACK):
                 DO_WRONG = False
         if DO_WRONG:
             print('')
-            print(cthl.RED + 'Incorrect' + cthl.DEFAULT)
+            print ctext('Incorrect').warn()
             if visibility == '1':
-                print(cthl.BOLD + 'Correct Answer: ' \
-                + cthl.DEFAULT + Alist[Q_INDEX])
+                print ctext('Correct Answer:').bold() + Alist[Q_INDEX]
             INCORRECT += 1
             print('')
             raw_input('Press Enter to continue...')
@@ -596,8 +580,7 @@ def TEST2(STACK):
     i += 1
     Score = float(CORRECT) / float(i)
     DISPLAY_SCORE = ('%.2f' % (Score))
-    print('Final Score = ' + cthl.CYAN + DISPLAY_SCORE)
-    print cthl.DEFAULT
+    print('Final Score = ') + ctext(DISPLAY_SCORE).hightlight
     connection.close()
     COMMIT_HISTORY(STACK, STARTD, STARTT, DISPLAY_SCORE)
     raw_input('Press Enter to continue...')
@@ -648,14 +631,11 @@ def TEST3(STACK):
         subprocess.call('clear',shell=True)
         # Header
         if i == 0:
-            print cthl.BOLD + \
-            ('Total %d | Correct %d | Answered %d' % (QUIZ_SIZE,CORRECT,i)) \
-            + cthl.DEFAULT
+            print ctext('Total %d | Correct %d | Answered %d' % (QUIZ_SIZE,CORRECT,i)).bold()
         else:
             Score = float(CORRECT) / float(i)
-            print cthl.BOLD + \
-            ('Total %d | Correct %d | Answered %d | Score ' % (QUIZ_SIZE,CORRECT,i)) \
-            + cthl.CYAN + '%.2f' % (Score) + cthl.DEFAULT
+            print ctext('Total %d | Correct %d | Answered %d | Score ' % (QUIZ_SIZE,CORRECT,i)).bold() \
+            + ctext('%.2f' % (Score)).highlight()
         print('')
 
         print Qlist[Q_INDEX]
@@ -677,10 +657,9 @@ def TEST3(STACK):
                 DO_WRONG = False
         if DO_WRONG:
             print('')
-            print(cthl.RED + 'Incorrect' + cthl.DEFAULT)
+            print ctext('Incorrect').warn()
             if visibility == '1':
-                print(cthl.BOLD + 'Correct Answer: ' \
-                + cthl.DEFAULT + Alist[Q_INDEX])
+                print ctext('Correct Answer: ').bold() + Alist[Q_INDEX]
             INCORRECT += 1
             print('')
             raw_input('Press Enter to continue...')
@@ -690,8 +669,7 @@ def TEST3(STACK):
     i += 1
     Score = float(CORRECT) / float(i)
     DISPLAY_SCORE = ('%.2f' % (Score))
-    print('Final Score = ' + cthl.CYAN + DISPLAY_SCORE)
-    print cthl.DEFAULT
+    print('Final Score = ') + ctext(DISPLAY_SCORE).highlight()
     connection.close()
     COMMIT_HISTORY(STACK, STARTD, STARTT, DISPLAY_SCORE)
     raw_input('Press Enter to continue...')
@@ -719,19 +697,18 @@ def DELETE(STACK):
     HISTORY_FILE = CMD_HISTORY + '/' + STACK + '.db'
     subprocess.call('clear',shell=True)
     print('')
-    print cthl.RED + 'Are you sure you want to PERMANENTLY delete stack ' + STACK + '?'
+    print ctext('Are you sure you want to PERMANENTLY delete stack %s?' % STACK).warn()
     print('Type \'YES\' to remove, \'exit\' to abort.')
-    print cthl.DEFAULT + ('')
     ACTION = raw_input(' ~> ')
     if ACTION == 'YES':
 
-        print cthl.RED + 'DELETING',
+        print ctext('DELETING').warn(),
         time.sleep(.25)
-        print'.',
+        print ctext('.').warn(),
         time.sleep(.25)
-        print'.',
+        print ctext('.').warn(),
         time.sleep(.25)
-        print'.' + cthl.DEFAULT
+        print ctext('.').warn()
 
         if os.path.isfile(TARGET_STACK):
             os.remove(TARGET_STACK)
@@ -743,7 +720,7 @@ def DELETE(STACK):
     elif ACTION == 'exit':
         MAIN_MENU(0)
     else:
-        print cthl.RED + ACTION + ' is not a recognized response.'
+        print ctext('%s is not a recognized response.' % ACTION).warn()
         time.sleep(1)
         DELETE(STACK)
     
@@ -759,33 +736,31 @@ def MAIN_MENU(EXPANDED):
 
     if CHECKED_STACK() == 'deadMonkey':
         STACK = 'NONE'
-        STYLE = cthl.RED
+        DISPLAY_STACK = ctext('NONE').warn()
     else:
         STACK = CHECKED_STACK()
-        STYLE = cthl.CYAN
+        DISPLAY_STACK = ctext(CHECKED_STACK()).highlight()
 
-    # Some options require a checkedout stack
+    # Some options require a checked out stack
     def PRINT_WARN():
-        print cthl.RED + \
-        'A stack must be checked out first.'
-        print 'Use' + cthl.CYAN + ' select ' \
-        + cthl.RED + 'for checkout.' + cthl.DEFAULT
+        print ctext('A stack must be checked out first.').warn()
+        print ctext('Use').warn() + ctext(' select ').highlight() \
+        + ctext('for checkout.').warn()
         time.sleep(1.5)
         subprocess.call('clear',shell=True)
         MAIN_MENU(0)
 
     if os.listdir(CMD_STACKS) == []:
-        print(cthl.BOLD + '+---------------------------------------------+')
-        print cthl.BOLD + '| It looks like you haven\'t created any tests.|'
-        print '| You won\'t be able to do much without one,   |'
-        print '| use the ' + cthl.CYAN + 'create' + cthl.DEFAULT + cthl.BOLD + ' command below to do so.      |'
-        print('+---------------------------------------------+')
-        print cthl.DEFAULT + ('')
+        print ctext('+---------------------------------------------+').bold()
+        print ctext('| It looks like you haven\'t created any tests.|').bold()
+        print ctext('| You won\'t be able to do much without one,   |').bold()
+        print ctext('| use the ').bold() \
+        + ctext('create').highlight() \
+        + ctext(' command below to do so.      |').bold()
+        print ctext('+---------------------------------------------+').bold()
 
     def MENU_SIMPLE():
-        print \
-        cthl.BOLD + 'Welcome to CommandTest - Stack:' + \
-        cthl.DEFAULT + ' ' + STYLE + STACK + cthl.DEFAULT
+        print ctext('Welcome to CommandTest - Stack: ').bold() + (DISPLAY_STACK)
         print('')
         print('Options:')
         print('')
@@ -798,9 +773,7 @@ def MAIN_MENU(EXPANDED):
         print ('')
 
     def MENU_LONG():
-        print \
-        cthl.BOLD + 'Welcome to CommandTest - Stack: ' + \
-        STYLE + STACK + cthl.DEFAULT
+        print ctext('Welcome to CommandTest - Stack: ').bold() + (DISPLAY_STACK)
         print('')
         print('Options:')
         print('')
@@ -874,8 +847,7 @@ def MAIN_MENU(EXPANDED):
     elif OPTION == 'clear':
         MAIN_MENU(0)
     else:
-        print cthl.RED + OPTION + \
-        ' is not a valid option.' + cthl.DEFAULT
+        print ctext('%s is not a valid option' % (OPTION)).warn()
         time.sleep(1)
 
     subprocess.call('clear',shell=True)
