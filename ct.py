@@ -574,13 +574,15 @@ def TEST2(STACK):
             INCORRECT += 1
             print('')
             raw_input('Press Enter to continue...')
+        del Qlist[Q_INDEX]
+        del Alist[Q_INDEX]
 
     subprocess.call('clear',shell=True)
     print('')
     i += 1
     Score = float(CORRECT) / float(i)
     DISPLAY_SCORE = ('%.2f' % (Score))
-    print('Final Score = ') + ctext(DISPLAY_SCORE).hightlight
+    print('Final Score = ') + ctext(DISPLAY_SCORE).highlight()
     connection.close()
     COMMIT_HISTORY(STACK, STARTD, STARTT, DISPLAY_SCORE)
     raw_input('Press Enter to continue...')
