@@ -450,8 +450,8 @@ def TEST1(STACK):
         EXCLUSION_WINDOW_SIZE = 1
 
     for i in range(0, QUIZ_SIZE):
-
         Q_INDEX = randint(0, (len(Qlist) - 1))
+
         while Q_INDEX in EXCLUSION_WINDOW:
             Q_INDEX = randint(0, (len(Qlist) - 1))
         if len(EXCLUSION_WINDOW) < EXCLUSION_WINDOW_SIZE:
@@ -706,6 +706,9 @@ def TEST4(STACK):
     INCORRECT = 0
     SCORE = 0.0
 
+    # EXCLUSION_WINDOW is used to ensure questions are not repeated too often
+    EXCLUSION_WINDOW = []
+
     # Populate Qlist and Alist with questions and answers
 
     DATABASE = CMD_STACKS + '/' + STACK + '.db'
@@ -719,27 +722,48 @@ def TEST4(STACK):
         Alist.append(row[0])
 
     if len(Qlist) < 4:
-        print('You must populate this stack with at least 4 questions prior to using this test type.')
-        time.sleep(1)
+        print('You must populate this stack with at least 4 questions prior to using the '
+        + ctext('Multiple Choice').highlight() + ' test type.')
+        time.sleep(1.5)
         MAIN_MENU(0)
+    else:
+        print('How many questions would you like to take?\n')
+        try:
+            QUIZ_SIZE = int(raw_input(' ~> '))
+        except ValueError:
+            print ctext('Error!').warn()
+            time.sleep(1)
+            MAIN_MENU(0)
 
-    QUIZ_SIZE = len(Qlist)
+    if len(Qlist) > 20:
+        EXCLUSION_WINDOW_SIZE = 7
+    elif len(Qlist) > 10:
+        EXCLUSION_WINDOW_SIZE = 4
+    else:
+        EXCLUSION_WINDOW_SIZE = 1
 
     for i in range(0, len(Qlist)):
-        Pool = range(0, len(Qlist))
-        print "Pool = " + str(Pool)
-
         Q_INDEX = randint(0, (len(Qlist) - 1))
+
+        while Q_INDEX in EXCLUSION_WINDOW:
+            Q_INDEX = randint(0, (len(Qlist) - 1))
+        if len(EXCLUSION_WINDOW) < EXCLUSION_WINDOW_SIZE:
+            EXCLUSION_WINDOW.append(Q_INDEX)
+        else:
+            del EXCLUSION_WINDOW[0]
+            EXCLUSION_WINDOW.append(Q_INDEX)
+
+	# An additional list 'Pool[]' is declared from which to destructively pull random indexes.
+
+        Pool = range(0, len(Qlist))
         del Pool[Q_INDEX]
         shuffle(Pool)
-        print "Shuffled Pool = " + str(Pool)
 
         W1 = Pool[0]
         W2 = Pool[1]
         W3 = Pool[2]
 
         Choices = [Q_INDEX, W1, W2, W3]
-        print "Choices = " + str(Choices)
         shuffle(Choices)
         AnswerKey = {"A" : Choices[0], "B" : Choices[1], "C" : Choices[2], "D" : Choices[3]}
 
@@ -791,7 +815,8 @@ def TEST4(STACK):
                 if visibility == '1':
                     printScreen(1)
                 print ctext('Incorrect').warn()
-                raw_input('Press Enter to continue...')
+                if i < (len(Qlist) - 1):
+                    raw_input('Press Enter to continue...')
     raw_input('Press Enter to continue...')
 
 def COMMIT_HISTORY(STACK, STARTD, STARTT, DISPLAY_SCORE):
