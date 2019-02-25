@@ -11,8 +11,7 @@ if [ "$1" == "" ]; then
 
 	mkdir -p $INSTALL_DIR
 	cp ./ct.py $INSTALL_DIR && chmod 755 $INSTALL_DIR/ct.py
-	cp ./README $INSTALL_DIR && chmod 744 $INSTALL_DIR/README
-	cp ./LICENSE $INSTALL_DIR && chmod 744 $INSTALL_DIR/LICENSE
+	cp ./readme.html $INSTALL_DIR && chmod 744 $INSTALL_DIR/README
 	ln -sf $INSTALL_DIR/ct.py /usr/bin/ct
 		
 else
@@ -23,4 +22,3 @@ else
 		echo "$1 is not a recognized option."
 	fi
 fi
-

@@ -1,0 +1,196 @@
+= CommandTest
+:toc:
+
+== License
+
+CommandTest (C) 2016-2019 Roger Heslop +
+Build, manage, and create custom, command-line driven tests. + 
+
+This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+For a full copy of the GNU General Public License, see <http://www.gnu.org/licenses/>
+
+== About
+
+CommandTest is a command-line interface (CLI) question and answer testing system. Create custom tests for memorization, homework, or exams. CommandTest was originally developed as a tool to help study for CLI practicum tests, but is useful for any memorization-based goal.
+
+Each test created is a called a stack. A collection of stacks is specific to each user. Through CommandTest you can add, delete and modify any number of stacks. 
+
+== Installation
+
+CommandTest can be run as a standalone executable. Within the directory of the executable, run the following command.
+
+----
+user@workstation ~]$ ./ct.py
+----
+
+To install, run the install script.
+
+----
+user@workstation ~]$ sudo ./install.sh
+----
+
+The install script will do the following.
+
+. Places the ct.py executable and readme.html files in a newly created directory, /opt/commandTest
+
+. Creates a softlink /usr/bin/ct -> /opt/commandTest/ct.py
+
+After installing you can open up commandTest by typing 'ct' in any directory on a command prompt.
+
+== Getting Started
+
+. The first time the application is run, you will need to create your first stack.
++
+----
++---------------------------------------------+
+| It looks like you haven't created any tests.|
+| You won't be able to do much without one,   |
+| use the create command below to do so.      |
++---------------------------------------------+
+Welcome to CommandTest - Stack: NONE
+
+Options:
+
+    test                             select
+    history                          create
+    view                             populate
+    search                           prune
+    settings                         delete
+    help                             exit
+
+ ~> 
+----
+
+. Type `create` at the prompt. You are then prompted to enter the stack name.
++
+----
+Stack Name:
+----
+
+. Type `test` and press `enter`.
++
+----
+Welcome to CommandTest - Stack: test
+
+Options:
+
+    test                             select
+    history                          create
+    view                             populate
+    search                           prune
+    settings                         delete
+    help                             exit
+
+ ~> 
+----
++
+Whenever a stack is created for the first time, it is checked out. You can see the currently checked out stack displayed along the top of the terminal.
+
+. Next, populate your first stack with questions. Type `populate` to begin the process of doing so.
++
+----
+
+Question:
+Answer:
+
+Question ~>
+----
+
+. Type the desired question and press `enter`. You will see your question populate along the top next to `Question`. The prompt changes to `Answer ~>`.
+
+. Type the desired answer. Press `enter`.
+
+. Follow the prompt to take one of four options.
+
+save:: Commit the question to the database. This question can be pruned later if desired. You are returned to the main menu.
+
+add:: Commit the question to the database and immediately add another question. You will be returned to the `Question ~>` prompt.
+
+clear:: Do not commit the question. Clear the question and start over.
+
+exit:: Do not commit the question. Exit directly to the main menu.
+
+== Options
+
+The options are typed as seen at the prompt on the main menu.
+
+test:: Begin taking a test
+
+history:: View up to 10 of the last tests taken. The history seen is specific to the stack that is checked out.
+
+view:: View the questions and answers of the currently checked out stack.
+
+search:: View a specific question/answer pair by entering a keyword that appears in either the question or answer.
+
+settings:: Change the testing behavior.
+
+help:: Show context help next to menu items. Type `clear` to hide context help.
+
+select:: Select your desired stack for management or testing.
+
+create:: Create a new stack.
+
+populate:: Add new questions to your stack. This can be done at any after the creation of the stack.
+
+prune:: Remove questions from the stack.
+
+delete:: Delete the currently checked out stack.
+
+exit:: Exit CommandTest.
+
+== Settings
+
+----
+ Test Flow
+
+ 1. Randomized - Variable [*]
+ 2. Randomized - Full     [ ]
+ 3. Ordered               [ ]
+ 4. Multiple Choice       [ ]
+
+
+ Behavior when wong answer provided:
+
+ 5. Show correct answer [*]
+ 6. Hide correct answer [ ]
+
+
+ Case sensitivity:
+
+ 7. On  [*]
+ 8. Off [ ]
+----
+
+Use the settings to modify how a test is taken. Type the number next to the desired setting to select or deselect. 
+
+=== Test Flow
+
+Randomize - Variable:: The questions are randomized. The number of questions taken is variable. You will determine the number of questions you want to take when starting a test.
+
+Randomized - Full:: The questions are randomized. The number of questions taken are the number of questions on the test. All questions in the stack are shuffled and displayed.
+
+Ordered:: All questions are ordered. The number of questions taken are the number of questions on the test. All questions appear in the order they are created.
+
+Multiple Choice:: The questions are randomized. The number of questions taken is variable. You will determine the number of questions you want to take when starting the test. Three incorrect answers and one correct answer are shuffled and displayed in multiple choice format. 
+
+[WARNING]
+====
+The `Multiple Choice` setting may produce undesired results from some tests. Incorrect answers are chosen at random from _currently_ populated answers in other question/answer pairs from the checked out stack. This setting works best with stacks that have similarly styled questions. An example might be a stack for memorizing state capitals, or alternatively, network ports.
+====
+
+[NOTE]
+====
+You must have at least four questions in your stack to run a `Multiple Choice` test.
+====
+
+=== Behavior when wong answer provided
+
+When an incorrect response is recieved, should commandTest show the correct answer?
+
+
+=== Case sensitivity
+
+Case sensitivity is toggled on by default, change this behavior here
