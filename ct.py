@@ -21,16 +21,16 @@ class ctext(object):
         return('\033[0;36m' + self.text + '\033[0m')
 
 def BANNER():
-    print (' ____ _______   _____   __   ___    __   ______')
-    print ('|  __|  _  | \_/  |  \_/ |  /   \  |  \ | |    \\')
-    print ('| |  | | | |      |      | /  ^  \ |   \| | |\  |')
-    print ('| |__| |_| | |\/| | |\/| |/  ___  \| |\   | |/  |')
-    print ('|____|_____|_|__|_|_|__|_|__/_ _\__|_|_\__|____/ ')
-    print ('             |___    ___|   _ |     |___    ___|')
-    print ('                 |  |   |  |_  \  \_|   |  |')
-    print ('                 |  |   |   _| _\  \    |  |')
-    print ('                 |  |   |  |__|  \  \   |  |')
-    print ('                 |__|   |_____|_____|   |__|')
+    print(' ____ _______   _____   __   ___    __   ______')
+    print('|  __|  _  | \_/  |  \_/ |  /   \  |  \ | |    \\')
+    print('| |  | | | |      |      | /  ^  \ |   \| | |\  |')
+    print('| |__| |_| | |\/| | |\/| |/  ___  \| |\   | |/  |')
+    print('|____|_____|_|__|_|_|__|_|__/_ _\__|_|_\__|____/ ')
+    print('             |___    ___|   _ |     |___    ___|')
+    print('                 |  |   |  |_  \  \_|   |  |')
+    print('                 |  |   |   _| _\  \    |  |')
+    print('                 |  |   |  |__|  \  \   |  |')
+    print('                 |__|   |_____|_____|   |__|')
 
 # Variables
 CMD_HISTORY=(os.path.expanduser('~') + '/.CmdTest/history')
@@ -109,7 +109,7 @@ def SETTINGS():
         print(' 8. Off [ ]')
     print('')
     print('')
-    USER_SELECTION = raw_input(' SELECTION ~> ')
+    USER_SELECTION = input(' SELECTION ~> ')
 
     if USER_SELECTION == 'exit' or USER_SELECTION == 'quit':
         MAIN_MENU(0)
@@ -117,11 +117,11 @@ def SETTINGS():
         try:
             test_int = int(USER_SELECTION)
         except ValueError:
-            print ctext(USER_SELECTION).warn() + ' is not a number. Please select menu option. (1 - 8)'
+            print(ctext(USER_SELECTION).warn() + ' is not a number. Please select menu option. (1 - 8)')
             time.sleep(1)
             SETTINGS()
         if not 0 < int(USER_SELECTION) < 9:
-            print ctext(USER_SELECTION).warn() + ' is out of bounds. Please select menu option between 1 and 8.'
+            print(ctext(USER_SELECTION).warn() + ' is out of bounds. Please select menu option between 1 and 8.')
             time.sleep(1)
             SETTINGS()
         else:
@@ -160,7 +160,7 @@ def HISTORY(STACK):
     SCORES = []
     TEST_HISTORY =(CMD_HISTORY + '/' + STACK + '.db')
     if not os.path.isfile(TEST_HISTORY):
-        print ctext('There isn\'t history for this test yet.').warn()
+        print(ctext('There isn\'t history for this test yet.').warn())
     else:
         connection = sqlite3.connect(TEST_HISTORY)
         troll = connection.cursor()
@@ -174,10 +174,10 @@ def HISTORY(STACK):
         for row in troll.fetchall():
             SCORES.append(row[0])
         for H_INDEX in range(0, len(DATES)):
-            print ctext(DATES[H_INDEX]).bold() + ' ' + \
-            TIMES[H_INDEX] + ' ' + ctext(SCORES[H_INDEX]).highlight()
+            print(ctext(DATES[H_INDEX]).bold() + ' ' + \
+            TIMES[H_INDEX] + ' ' + ctext(SCORES[H_INDEX]).highlight())
 
-    raw_input('Press Enter to continue...')
+    input('Press Enter to continue...')
 
 def CLEAR_CHECKOUT():
     for i in (os.listdir(CMD_STACKS)):
@@ -187,13 +187,13 @@ def CLEAR_CHECKOUT():
 def CHECKOUT_STACK():
     subprocess.call('clear',shell=True)
     print('')
-    print ctext('     Select stack:').bold()
+    print(ctext('     Select stack:').bold())
     print('     ============')
     for i in (os.listdir(CMD_STACKS)):
         if i.endswith('.db'):
-            print('     ') + i[:-3]
+            print(('     ') + i[:-3])
     print('')
-    SELECTION = raw_input(' ~> ')
+    SELECTION = input(' ~> ')
     if SELECTION:
         if SELECTION == 'exit':
             MAIN_MENU(0)
@@ -201,7 +201,7 @@ def CHECKOUT_STACK():
             CLEAR_CHECKOUT()
             open(CMD_STACKS + '/' + SELECTION, 'w').close
         else:
-            print ctext('%s is not a valid option.' % SELECTION).warn()
+            print(ctext('%s is not a valid option.' % SELECTION).warn())
             time.sleep(1)
             CHECKOUT_STACK()
     else:
@@ -210,10 +210,10 @@ def CHECKOUT_STACK():
 
 def CREATE_STACK():
     subprocess.call('clear',shell=True)
-    STACK = raw_input('Stack Name: ')
+    STACK = input('Stack Name: ')
     DATABASE = CMD_STACKS + '/' + STACK + '.db'
     if os.path.isfile(DATABASE):
-        print ('It appears a stack by that name already exists.')
+        print('It appears a stack by that name already exists.')
     else:
         connection = sqlite3.connect(DATABASE)
         troll = connection.cursor()
@@ -246,31 +246,31 @@ def PRUNE(STACK):
 
     for Q_INDEX in range(0, len(Qlist)):
         NUM = str(Q_INDEX + 1)
-        print ctext(NUM).bold() + '. ' + \
+        print(ctext(NUM).bold() + '. ' + \
         ctext('Q: ').highlight() + Qlist[Q_INDEX] + ' ' + \
-        ctext('A: ').highlight() + Alist[Q_INDEX]
+        ctext('A: ').highlight() + Alist[Q_INDEX])
 
     print('')
     print('Choose the Q/A pair to delete by number.\nThis will DELETE the Q/A pair from the stack.')
     print('\nType \'exit\' or \'quit\' to return to main menu.\n')
-    DELETE_ME = raw_input(' ~> ')
+    DELETE_ME = input(' ~> ')
     if DELETE_ME == 'exit' or DELETE_ME == 'quit':
         MAIN_MENU(0)
     else:
         try:
             Q_INDEX = int(DELETE_ME) - 1
         except ValueError:
-            print ctext('ValueError: I don\'t recognize that as a number.').warn()
+            print(ctext('ValueError: I don\'t recognize that as a number.').warn())
             time.sleep(1)
             PRUNE(STACK)
     if int(DELETE_ME) <= 0:
-        print ctext('IndexError: I\'m not seeing number %s' % DELETE_ME).warn()
+        print(ctext('IndexError: I\'m not seeing number %s' % DELETE_ME).warn())
         time.sleep(1)
         PRUNE(STACK)
     try:
         TARGET = ID_list[Q_INDEX]
     except IndexError:
-        print ctext('IndexError: I\'m not seeing number %s' % DELETE_ME).warn()
+        print(ctext('IndexError: I\'m not seeing number %s' % DELETE_ME).warn())
         time.sleep(1)
         PRUNE(STACK)
     DATABASE = CMD_STACKS + '/' + STACK + '.db'
@@ -284,32 +284,32 @@ def PRUNE(STACK):
 def POPULATE(STACK):
     subprocess.call('clear',shell=True)
     print('')
-    print ctext('Question:').bold()
-    print ctext('Answer:').bold()
+    print(ctext('Question:').bold())
+    print(ctext('Answer:').bold())
     print('')
-    QUESTION = raw_input('Question ~> ')
+    QUESTION = input('Question ~> ')
     subprocess.call('clear',shell=True)
 
     print('')
-    print ctext('Question: ').bold() + ctext(QUESTION).highlight()
-    print ctext('Answer: ').bold()
+    print(ctext('Question: ').bold() + ctext(QUESTION).highlight())
+    print(ctext('Answer: ').bold())
     print('')
-    ANSWER = raw_input('Answer ~> ')
+    ANSWER = input('Answer ~> ')
 
     def POPULATE_MENU():
         subprocess.call('clear',shell=True)
         print('')
-        print ctext('Question: ').bold() + ctext(QUESTION).highlight()
-        print ctext('Answer: ').bold() + ctext(ANSWER).highlight()
+        print(ctext('Question: ').bold() + ctext(QUESTION).highlight())
+        print(ctext('Answer: ').bold() + ctext(ANSWER).highlight())
 
         print('')
         print('Options:')
-        print ('')
-        print ('save    - commit and exit')
-        print ('add     - commit and add another')
-        print ('clear   - cancel and start over')
-        print ('exit    - cancel and and return to main menu')          
-        OPTION = raw_input(' ~> ')
+        print('')
+        print('save    - commit and exit')
+        print('add     - commit and add another')
+        print('clear   - cancel and start over')
+        print('exit    - cancel and and return to main menu')
+        OPTION = input(' ~> ')
         if OPTION == 'save':
             DATABASE = CMD_STACKS + '/' + STACK + '.db'
             connection = sqlite3.connect(DATABASE)
@@ -330,7 +330,7 @@ def POPULATE(STACK):
         elif OPTION == 'exit':
             MAIN_MENU(0)
         else:
-            print ctext('%s is not a valid option.' % OPTION).warn()
+            print(ctext('%s is not a valid option.' % OPTION).warn())
             time.sleep(1)
             POPULATE_MENU()
     POPULATE_MENU()
@@ -350,12 +350,12 @@ def DISPLAY(STACK):
         Alist.append(row[0])
 
     for Q_INDEX in range(0, len(Qlist)):
-         print ctext('Question:').bold() + ' %s' % Qlist[Q_INDEX]
-         print ctext('Answer:').bold() + ' %s' % Alist[Q_INDEX]
+         print(ctext('Question:').bold() + ' %s' % Qlist[Q_INDEX])
+         print(ctext('Answer:').bold() + ' %s' % Alist[Q_INDEX])
          print('')
     connection.close()
 
-    raw_input('Press Enter to continue...')
+    input('Press Enter to continue...')
 
 def QUERY(STACK):
     Qlist = []
@@ -373,21 +373,21 @@ def QUERY(STACK):
         Alist.append(row[0])
     connection.close()
     print('')
-    ARG = raw_input('QUERY: ')    
+    ARG = input('QUERY: ')    
     for Q_INDEX in range(0, len(Qlist)):
         if Qlist[Q_INDEX].find(ARG) != -1:
             matches += 1
-            print ctext('Question: ').bold() + Qlist[Q_INDEX]
-            print ctext('Answer: ').bold() + Alist[Q_INDEX]
+            print(ctext('Question: ').bold() + Qlist[Q_INDEX])
+            print(ctext('Answer: ').bold() + Alist[Q_INDEX])
             print('')
         elif Alist[Q_INDEX].find(ARG) != -1:
             matches += 1
-            print ctext('Question: ').bold() + Qlist[Q_INDEX]
-            print ctext('Answer: ').bold() + Alist[Q_INDEX]
+            print(ctext('Question: ').bold() + Qlist[Q_INDEX])
+            print(ctext('Answer: ').bold() + Alist[Q_INDEX])
             print('')
     if matches == 0:
         print('No matches found.')
-    raw_input('Press Enter to continue...')
+    input('Press Enter to continue...')
 
 def TEST1(STACK):
     
@@ -436,9 +436,9 @@ def TEST1(STACK):
     else:
         print('How many questions would you like to take?\n')
         try:
-            QUIZ_SIZE = int(raw_input(' ~> '))
+            QUIZ_SIZE = int(input(' ~> '))
         except ValueError:
-            print ctext('Error!').warn()
+            print(ctext('Error!').warn())
             time.sleep(1)
             MAIN_MENU(0)
 
@@ -463,14 +463,14 @@ def TEST1(STACK):
         subprocess.call('clear',shell=True)
         # Header
         if i == 0:
-            print ctext('Total %d | Correct %d | Answered %d' % (QUIZ_SIZE,CORRECT,i)).bold()
+            print(ctext('Total %d | Correct %d | Answered %d' % (QUIZ_SIZE,CORRECT,i)).bold())
         else:
             Score = float(CORRECT) / float(i)
-            print ctext('Total %d | Correct %d | Answered %d | Score ' % (QUIZ_SIZE,CORRECT,i)).bold() \
-            + ctext('%.2f' % Score).highlight()
+            print(ctext('Total %d | Correct %d | Answered %d | Score ' % (QUIZ_SIZE,CORRECT,i)).bold() \
+            + ctext('%.2f' % Score).highlight())
         print('')
-        print Qlist[Q_INDEX]
-        user_response = raw_input(' ~> ')
+        print(Qlist[Q_INDEX])
+        user_response = input(' ~> ')
         
         DO_WRONG = True
         if case == '0':
@@ -489,23 +489,23 @@ def TEST1(STACK):
                 DO_WRONG = False
         if DO_WRONG:
             print('')
-            print ctext('Incorrect').warn()
+            print(ctext('Incorrect').warn())
             if visibility == '1':
-                print ctext('Correct Answer: ').bold() + Alist[Q_INDEX]
+                print(ctext('Correct Answer: ').bold() + Alist[Q_INDEX])
             INCORRECT += 1
             print('')
-            raw_input('Press Enter to continue...')
+            input('Press Enter to continue...')
 
     subprocess.call('clear',shell=True)
     print('')
     i += 1
     Score = float(CORRECT) / float(i)
     DISPLAY_SCORE = ('%.2f' % (Score))
-    print('Final Score = ') + ctext(DISPLAY_SCORE).highlight()
+    print('Final Score = ' + ctext(DISPLAY_SCORE).highlight())
     connection.close()
 
     COMMIT_HISTORY(STACK, STARTD, STARTT, DISPLAY_SCORE)
-    raw_input('Press Enter to continue...')
+    input('Press Enter to continue...')
 
 def TEST2(STACK):
     
@@ -553,15 +553,15 @@ def TEST2(STACK):
         subprocess.call('clear',shell=True)
         # Header
         if i == 0:
-            print ctext('Total %d | Correct %d | Answered %d' % (QUIZ_SIZE,CORRECT,i)).bold()
+            print(ctext('Total %d | Correct %d | Answered %d' % (QUIZ_SIZE,CORRECT,i)).bold())
         else:
             Score = float(CORRECT) / float(i)
-            print ctext('Total %d | Correct %d | Answered %d | Score ' % (QUIZ_SIZE,CORRECT,i)).bold() \
-            + ctext('%.2f' % (Score)).highlight()
+            print(ctext('Total %d | Correct %d | Answered %d | Score ' % (QUIZ_SIZE,CORRECT,i)).bold() \
+            + ctext('%.2f' % (Score)).highlight())
         print('')
 
-        print Qlist[Q_INDEX]
-        user_response = raw_input(' ~> ')
+        print(Qlist[Q_INDEX])
+        user_response = input(' ~> ')
         DO_WRONG = True
         if case == '0':
             if user_response.lower() == Alist[Q_INDEX].lower():
@@ -579,12 +579,12 @@ def TEST2(STACK):
                 DO_WRONG = False
         if DO_WRONG:
             print('')
-            print ctext('Incorrect').warn()
+            print(ctext('Incorrect').warn())
             if visibility == '1':
-                print ctext('Correct Answer:').bold() + Alist[Q_INDEX]
+                print(ctext('Correct Answer:').bold() + Alist[Q_INDEX])
             INCORRECT += 1
             print('')
-            raw_input('Press Enter to continue...')
+            input('Press Enter to continue...')
         del Qlist[Q_INDEX]
         del Alist[Q_INDEX]
 
@@ -593,10 +593,10 @@ def TEST2(STACK):
     i += 1
     Score = float(CORRECT) / float(i)
     DISPLAY_SCORE = ('%.2f' % (Score))
-    print('Final Score = ') + ctext(DISPLAY_SCORE).highlight()
+    print('Final Score = ' + ctext(DISPLAY_SCORE).highlight())
     connection.close()
     COMMIT_HISTORY(STACK, STARTD, STARTT, DISPLAY_SCORE)
-    raw_input('Press Enter to continue...')
+    input('Press Enter to continue...')
 
 def TEST3(STACK):
     
@@ -644,15 +644,15 @@ def TEST3(STACK):
         subprocess.call('clear',shell=True)
         # Header
         if i == 0:
-            print ctext('Total %d | Correct %d | Answered %d' % (QUIZ_SIZE,CORRECT,i)).bold()
+            print(ctext('Total %d | Correct %d | Answered %d' % (QUIZ_SIZE,CORRECT,i)).bold())
         else:
             Score = float(CORRECT) / float(i)
-            print ctext('Total %d | Correct %d | Answered %d | Score ' % (QUIZ_SIZE,CORRECT,i)).bold() \
-            + ctext('%.2f' % (Score)).highlight()
+            print(ctext('Total %d | Correct %d | Answered %d | Score ' % (QUIZ_SIZE,CORRECT,i)).bold() \
+            + ctext('%.2f' % (Score)).highlight())
         print('')
 
-        print Qlist[Q_INDEX]
-        user_response = raw_input(' ~> ')
+        print(Qlist[Q_INDEX])
+        user_response = input(' ~> ')
         DO_WRONG = True
         if case == '0':
             if user_response.lower() == Alist[Q_INDEX].lower():
@@ -670,22 +670,22 @@ def TEST3(STACK):
                 DO_WRONG = False
         if DO_WRONG:
             print('')
-            print ctext('Incorrect').warn()
+            print(ctext('Incorrect').warn())
             if visibility == '1':
-                print ctext('Correct Answer: ').bold() + Alist[Q_INDEX]
+                print(ctext('Correct Answer: ').bold() + Alist[Q_INDEX])
             INCORRECT += 1
             print('')
-            raw_input('Press Enter to continue...')
+            input('Press Enter to continue...')
 
     subprocess.call('clear',shell=True)
     print('')
     i += 1
     Score = float(CORRECT) / float(i)
     DISPLAY_SCORE = ('%.2f' % (Score))
-    print('Final Score = ') + ctext(DISPLAY_SCORE).highlight()
+    print('Final Score = ' + ctext(DISPLAY_SCORE).highlight())
     connection.close()
     COMMIT_HISTORY(STACK, STARTD, STARTT, DISPLAY_SCORE)
-    raw_input('Press Enter to continue...')
+    input('Press Enter to continue...')
 
 def TEST4(STACK):
 
@@ -729,9 +729,9 @@ def TEST4(STACK):
     else:
         print('How many questions would you like to take?\n')
         try:
-            QUIZ_SIZE = int(raw_input(' ~> '))
+            QUIZ_SIZE = int(input(' ~> '))
         except ValueError:
-            print ctext('Error!').warn()
+            print(ctext('Error!').warn())
             time.sleep(1)
             MAIN_MENU(0)
 
@@ -774,32 +774,32 @@ def TEST4(STACK):
             subprocess.call('clear',shell=True)
             # Header
             if i == 0:
-                print ctext('Total %d | Correct %d | Answered %d' % (QUIZ_SIZE,CORRECT,i)).bold()
+                print(ctext('Total %d | Correct %d | Answered %d' % (QUIZ_SIZE,CORRECT,i)).bold())
             else:
                 Score = float(CORRECT) / float(i)
-                print ctext('Total %d | Correct %d | Answered %d | Score ' % (QUIZ_SIZE,CORRECT,i)).bold() \
-                + ctext('%.2f' % (Score)).highlight()
+                print(ctext('Total %d | Correct %d | Answered %d | Score ' % (QUIZ_SIZE,CORRECT,i)).bold() \
+                + ctext('%.2f' % (Score)).highlight())
             print('')
 
-            print Qlist[Q_INDEX]
+            print(Qlist[Q_INDEX])
             print('')
             k = 0
             for j in enumerate('ABCD'):
                 if (answer == 1) and (Choices[k] == Q_INDEX):
-                    print ctext('%s. %s' % (j[1], Alist[Choices[k]])).bold()
+                    print(ctext('%s. %s' % (j[1], Alist[Choices[k]])).bold())
                 else:
-                    print '%s. %s' % (j[1], Alist[Choices[k]])
+                    print('%s. %s' % (j[1], Alist[Choices[k]]))
                 k += 1
             print('')
             if (answer == 1):
                 print('')
             else:
-                user_response = raw_input(' ~> ')
+                user_response = input(' ~> ')
                 return user_response
 
         user_response = printScreen(0).upper()
         while user_response not in AnswerKey:
-            print ctext('Accepted inputs: A, B, C, D only').warn()
+            print(ctext('Accepted inputs: A, B, C, D only').warn())
             time.sleep(1)
             user_response = printScreen(0).upper()
         else:
@@ -814,10 +814,10 @@ def TEST4(STACK):
                 print('')
                 if visibility == '1':
                     printScreen(1)
-                print ctext('Incorrect').warn()
+                print(ctext('Incorrect').warn())
                 if i < (len(Qlist) - 1):
-                    raw_input('Press Enter to continue...')
-    raw_input('Press Enter to continue...')
+                    input('Press Enter to continue...')
+    input('Press Enter to continue...')
 
 def COMMIT_HISTORY(STACK, STARTD, STARTT, DISPLAY_SCORE):
     TEST_HISTORY = (CMD_HISTORY + '/' + STACK + '.db')
@@ -840,18 +840,18 @@ def DELETE(STACK):
     HISTORY_FILE = CMD_HISTORY + '/' + STACK + '.db'
     subprocess.call('clear',shell=True)
     print('')
-    print ctext('Are you sure you want to PERMANENTLY delete stack %s?' % STACK).warn()
+    print(ctext('Are you sure you want to PERMANENTLY delete stack %s?' % STACK).warn())
     print('Type \'YES\' to remove, \'exit\' to abort.')
-    ACTION = raw_input(' ~> ')
+    ACTION = input(' ~> ')
     if ACTION == 'YES':
 
-        print ctext('DELETING').warn(),
+        print(ctext('DELETING').warn()),
         time.sleep(.25)
-        print ctext('.').warn(),
+        print(ctext('.').warn()),
         time.sleep(.25)
-        print ctext('.').warn(),
+        print(ctext('.').warn()),
         time.sleep(.25)
-        print ctext('.').warn()
+        print(ctext('.').warn())
 
         if os.path.isfile(TARGET_STACK):
             os.remove(TARGET_STACK)
@@ -863,7 +863,7 @@ def DELETE(STACK):
     elif ACTION == 'exit':
         MAIN_MENU(0)
     else:
-        print ctext('%s is not a recognized response.' % ACTION).warn()
+        print(ctext('%s is not a recognized response.' % ACTION).warn())
         time.sleep(1)
         DELETE(STACK)
     
@@ -886,24 +886,24 @@ def MAIN_MENU(EXPANDED):
 
     # Some options require a checked out stack
     def PRINT_WARN():
-        print ctext('A stack must be checked out first.').warn()
-        print ctext('Use').warn() + ctext(' select ').highlight() \
-        + ctext('for checkout.').warn()
+        print(ctext('A stack must be checked out first.').warn())
+        print(ctext('Use').warn() + ctext(' select ').highlight() \
+        + ctext('for checkout.').warn())
         time.sleep(1.5)
         subprocess.call('clear',shell=True)
         MAIN_MENU(0)
 
     if os.listdir(CMD_STACKS) == []:
-        print ctext('+---------------------------------------------+').bold()
-        print ctext('| It looks like you haven\'t created any tests.|').bold()
-        print ctext('| You won\'t be able to do much without one,   |').bold()
-        print ctext('| use the ').bold() \
+        print(ctext('+---------------------------------------------+').bold())
+        print(ctext('| It looks like you haven\'t created any tests.|').bold())
+        print(ctext('| You won\'t be able to do much without one,   |').bold())
+        print(ctext('| use the ').bold() \
         + ctext('create').highlight() \
-        + ctext(' command below to do so.      |').bold()
-        print ctext('+---------------------------------------------+').bold()
+        + ctext(' command below to do so.      |').bold())
+        print(ctext('+---------------------------------------------+').bold())
 
     def MENU_SIMPLE():
-        print ctext('Welcome to CommandTest - Stack: ').bold() + (DISPLAY_STACK)
+        print(ctext('Welcome to CommandTest - Stack: ').bold() + (DISPLAY_STACK))
         print('')
         print('Options:')
         print('')
@@ -913,10 +913,10 @@ def MAIN_MENU(EXPANDED):
         print('    search                           prune')
         print('    settings                         delete')
         print('    help                             exit')
-        print ('')
+        print('')
 
     def MENU_LONG():
-        print ctext('Welcome to CommandTest - Stack: ').bold() + (DISPLAY_STACK)
+        print(ctext('Welcome to CommandTest - Stack: ').bold() + (DISPLAY_STACK))
         print('')
         print('Options:')
         print('')
@@ -926,14 +926,14 @@ def MAIN_MENU(EXPANDED):
         print('    search   | Query stack           prune    | Remove questions from stack')
         print('    settings | Change settings       delete   | Delete this stack')
         print('    help                             exit')
-        print ('')
+        print('')
 
     if EXPANDED == 0:
         MENU_SIMPLE()
     if EXPANDED == 1:
         MENU_LONG()
 
-    OPTION = raw_input(' ~> ')
+    OPTION = input(' ~> ')
 
     if OPTION == 'test':
         if STACK == 'NONE':
@@ -993,7 +993,7 @@ def MAIN_MENU(EXPANDED):
     elif OPTION == 'clear':
         MAIN_MENU(0)
     else:
-        print ctext('%s is not a valid option' % (OPTION)).warn()
+        print(ctext('%s is not a valid option' % (OPTION)).warn())
         time.sleep(1)
 
     subprocess.call('clear',shell=True)
