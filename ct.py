@@ -71,42 +71,34 @@ def SETTINGS():
         print(' 1. Randomized - Variable [*]')
         print(' 2. Randomized - Full     [ ]')
         print(' 3. Ordered               [ ]')
-        print(' 4. Multiple Choice       [ ]')
     elif test_type == '2':
         print(' 1. Randomized - Variable [ ]')
         print(' 2. Randomized - Full     [*]')
         print(' 3. Ordered               [ ]')
-        print(' 4. Multiple Choice       [ ]')
     elif test_type == '3':
         print(' 1. Randomized - Variable [ ]')
         print(' 2. Randomized - Full     [ ]')
         print(' 3. Ordered               [*]')
-        print(' 4. Multiple Choice       [ ]')
-    elif test_type == '4':
-        print(' 1. Randomized - Variable [ ]')
-        print(' 2. Randomized - Full     [ ]')
-        print(' 3. Ordered               [ ]')
-        print(' 4. Multiple Choice       [*]')
     print('')
     print('')
     print(' Behavior when wong answer provided:')
     print('')
     if visibility == '0':
-        print(' 5. Show correct answer [ ]')
-        print(' 6. Hide correct answer [*]')
+        print(' 4. Show correct answer [ ]')
+        print(' 5. Hide correct answer [*]')
     elif visibility == '1':
-        print(' 5. Show correct answer [*]')
-        print(' 6. Hide correct answer [ ]')
+        print(' 4. Show correct answer [*]')
+        print(' 5. Hide correct answer [ ]')
     print('')
     print('')
     print(' Case sensitivity:')
     print('')
     if case == '0':
-        print(' 7. On  [ ]')
-        print(' 8. Off [*]')
+        print(' 6. On  [ ]')
+        print(' 7. Off [*]')
     elif case == '1':
-        print(' 7. On  [*]')
-        print(' 8. Off [ ]')
+        print(' 6. On  [*]')
+        print(' 7. Off [ ]')
     print('')
     print('')
     USER_SELECTION = input(' SELECTION ~> ')
@@ -117,11 +109,11 @@ def SETTINGS():
         try:
             test_int = int(USER_SELECTION)
         except ValueError:
-            print(ctext(USER_SELECTION).warn() + ' is not a number. Please select menu option. (1 - 8)')
+            print(ctext(USER_SELECTION).warn() + ' is not a number. Please select menu option. (1 - 7)')
             time.sleep(1)
             SETTINGS()
-        if not 0 < int(USER_SELECTION) < 9:
-            print(ctext(USER_SELECTION).warn() + ' is out of bounds. Please select menu option between 1 and 8.')
+        if not 0 < int(USER_SELECTION) < 8:
+            print(ctext(USER_SELECTION).warn() + ' is out of bounds. Please select menu option between 1 and 7.')
             time.sleep(1)
             SETTINGS()
         else:
@@ -134,14 +126,12 @@ def SETTINGS():
             elif USER_SELECTION == '3':
                 troll.execute('UPDATE main SET option=? WHERE menu=?', ('3', 'test_type'))
             elif USER_SELECTION == '4':
-                troll.execute('UPDATE main SET option=? WHERE menu=?', ('4', 'test_type'))
-            elif USER_SELECTION == '5':
                 troll.execute('UPDATE main SET option=? WHERE menu=?', ('1', 'visibility'))
-            elif USER_SELECTION == '6':
+            elif USER_SELECTION == '5':
                 troll.execute('UPDATE main SET option=? WHERE menu=?', ('0', 'visibility'))
-            elif USER_SELECTION == '7':
+            elif USER_SELECTION == '6':
                 troll.execute('UPDATE main SET option=? WHERE menu=?', ('1', 'case_sensitivity'))
-            elif USER_SELECTION == '8':
+            elif USER_SELECTION == '7':
                 troll.execute('UPDATE main SET option=? WHERE menu=?', ('0', 'case_sensitivity'))
             connection.commit()
             connection.close()
@@ -687,138 +677,6 @@ def TEST3(STACK):
     COMMIT_HISTORY(STACK, STARTD, STARTT, DISPLAY_SCORE)
     input('Press Enter to continue...')
 
-def TEST4(STACK):
-
-    connection = sqlite3.connect(SETTINGS_DATABASE)
-    troll = connection.cursor()
-    troll.execute("SELECT option FROM main WHERE menu='visibility'")
-    visibility = troll.fetchone()[0]
-    connection.commit()
-    connection.close()
-
-    Qlist = []
-    Alist = []
-
-    STARTD=(time.strftime("%Y-%m-%d"))
-    STARTT=(time.strftime("%H:%M:%S"))
-
-    CORRECT = 0
-    INCORRECT = 0
-    SCORE = 0.0
-
-    # EXCLUSION_WINDOW is used to ensure questions are not repeated too often
-    EXCLUSION_WINDOW = []
-
-    # Populate Qlist and Alist with questions and answers
-
-    DATABASE = CMD_STACKS + '/' + STACK + '.db'
-    connection = sqlite3.connect(DATABASE)
-    troll = connection.cursor()
-    troll.execute('SELECT Question FROM main')
-    for row in troll.fetchall():
-        Qlist.append(row[0])
-    troll.execute('SELECT Answer FROM main')
-    for row in troll.fetchall():
-        Alist.append(row[0])
-
-    if len(Qlist) < 4:
-        print('You must populate this stack with at least 4 questions prior to using the '
-        + ctext('Multiple Choice').highlight() + ' test type.')
-        time.sleep(1.5)
-        MAIN_MENU(0)
-    else:
-        print('How many questions would you like to take?\n')
-        try:
-            QUIZ_SIZE = int(input(' ~> '))
-        except ValueError:
-            print(ctext('Error!').warn())
-            time.sleep(1)
-            MAIN_MENU(0)
-
-    if len(Qlist) > 20:
-        EXCLUSION_WINDOW_SIZE = 7
-    elif len(Qlist) > 10:
-        EXCLUSION_WINDOW_SIZE = 4
-    else:
-        EXCLUSION_WINDOW_SIZE = 1
-
-    for i in range(0, len(Qlist)):
-        Q_INDEX = randint(0, (len(Qlist) - 1))
-
-        while Q_INDEX in EXCLUSION_WINDOW:
-            Q_INDEX = randint(0, (len(Qlist) - 1))
-        if len(EXCLUSION_WINDOW) < EXCLUSION_WINDOW_SIZE:
-            EXCLUSION_WINDOW.append(Q_INDEX)
-        else:
-            del EXCLUSION_WINDOW[0]
-            EXCLUSION_WINDOW.append(Q_INDEX)
-
-	# An additional list 'Pool[]' is declared from which to destructively pull random indexes.
-
-        Pool = range(0, len(Qlist))
-        del Pool[Q_INDEX]
-        shuffle(Pool)
-
-        W1 = Pool[0]
-        W2 = Pool[1]
-        W3 = Pool[2]
-
-        Choices = [Q_INDEX, W1, W2, W3]
-        shuffle(Choices)
-        AnswerKey = {"A" : Choices[0], "B" : Choices[1], "C" : Choices[2], "D" : Choices[3]}
-
-        def printScreen(answer):
-            # answer should = 0 or 1, and determines if
-            # function is being used to display the answer
-
-            subprocess.call('clear',shell=True)
-            # Header
-            if i == 0:
-                print(ctext('Total %d | Correct %d | Answered %d' % (QUIZ_SIZE,CORRECT,i)).bold())
-            else:
-                Score = float(CORRECT) / float(i)
-                print(ctext('Total %d | Correct %d | Answered %d | Score ' % (QUIZ_SIZE,CORRECT,i)).bold() \
-                + ctext('%.2f' % (Score)).highlight())
-            print('')
-
-            print(Qlist[Q_INDEX])
-            print('')
-            k = 0
-            for j in enumerate('ABCD'):
-                if (answer == 1) and (Choices[k] == Q_INDEX):
-                    print(ctext('%s. %s' % (j[1], Alist[Choices[k]])).bold())
-                else:
-                    print('%s. %s' % (j[1], Alist[Choices[k]]))
-                k += 1
-            print('')
-            if (answer == 1):
-                print('')
-            else:
-                user_response = input(' ~> ')
-                return user_response
-
-        user_response = printScreen(0).upper()
-        while user_response not in AnswerKey:
-            print(ctext('Accepted inputs: A, B, C, D only').warn())
-            time.sleep(1)
-            user_response = printScreen(0).upper()
-        else:
-            if AnswerKey[user_response] == Q_INDEX:
-                if visibility == '1':
-                    printScreen(1)
-                print('')
-                print(':-)')
-                CORRECT += 1
-                time.sleep(.5)
-            else:
-                print('')
-                if visibility == '1':
-                    printScreen(1)
-                print(ctext('Incorrect').warn())
-                if i < (len(Qlist) - 1):
-                    input('Press Enter to continue...')
-    input('Press Enter to continue...')
-
 def COMMIT_HISTORY(STACK, STARTD, STARTT, DISPLAY_SCORE):
     TEST_HISTORY = (CMD_HISTORY + '/' + STACK + '.db')
     if not os.path.isfile(TEST_HISTORY):
@@ -945,8 +803,6 @@ def MAIN_MENU(EXPANDED):
                 TEST2(STACK)
             elif test_type == '3':
                 TEST3(STACK)
-            elif test_type == '4':
-                TEST4(STACK)
 
     elif OPTION == 'history':
         if STACK == 'NONE':

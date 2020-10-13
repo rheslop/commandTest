@@ -149,8 +149,6 @@ exit:: Exit CommandTest.
  1. Randomized - Variable [*]
  2. Randomized - Full     [ ]
  3. Ordered               [ ]
- 4. Multiple Choice       [ ]
-
 
  Behavior when wong answer provided:
 
@@ -174,22 +172,9 @@ Randomized - Full:: The questions are randomized. The number of questions taken 
 
 Ordered:: All questions are ordered. The number of questions taken are the number of questions on the test. All questions appear in the order they are created.
 
-Multiple Choice:: The questions are randomized. The number of questions taken is variable. You will determine the number of questions you want to take when starting the test. Three incorrect answers and one correct answer are shuffled and displayed in multiple choice format. 
-
-[WARNING]
-====
-The `Multiple Choice` setting may produce undesired results from some tests. Incorrect answers are chosen at random from _currently_ populated answers in other question/answer pairs from the checked out stack. This setting works best with stacks that have similarly styled questions. An example might be a stack for memorizing state capitals, or alternatively, network ports.
-====
-
-[NOTE]
-====
-You must have at least four questions in your stack to run a `Multiple Choice` test.
-====
-
 === Behavior when wong answer provided
 
 When an incorrect response is recieved, should commandTest show the correct answer?
-
 
 === Case sensitivity
 
