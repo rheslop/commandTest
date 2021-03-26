@@ -81,7 +81,7 @@ def SETTINGS():
         print(' 3. Ordered               [*]')
     print('')
     print('')
-    print(' Behavior when wong answer provided:')
+    print(' Behavior when wrong answer provided:')
     print('')
     if visibility == '0':
         print(' 4. Show correct answer [ ]')
